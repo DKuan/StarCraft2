@@ -15,13 +15,25 @@ from common import common
 import defeat_zerglings.dqfd as deep_Defeat_zerglings
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
+
+_UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
+_SELECTED = features.SCREEN_FEATURES.selected.index
 _PLAYER_FRIENDLY = 1
 _PLAYER_NEUTRAL = 3  # beacon/minerals
 _PLAYER_HOSTILE = 4
 _NO_OP = actions.FUNCTIONS.no_op.id
+_SELECT_UNIT_ID = 1
+
+_CONTROL_GROUP_SET = 1
+_CONTROL_GROUP_RECALL = 0
+
+_SELECT_CONTROL_GROUP = actions.FUNCTIONS.select_control_group.id
 _MOVE_SCREEN = actions.FUNCTIONS.Move_screen.id
 _ATTACK_SCREEN = actions.FUNCTIONS.Attack_screen.id
 _SELECT_ARMY = actions.FUNCTIONS.select_army.id
+_SELECT_UNIT = actions.FUNCTIONS.select_unit.id
+_SELECT_POINT = actions.FUNCTIONS.select_point.id
+
 _NOT_QUEUED = [0]
 _SELECT_ALL = [0]
 
@@ -29,7 +41,7 @@ step_mul = 1
 steps = 2000
 
 FLAGS = flags.FLAGS
-
+UP, DOWN, LEFT, RIGHT = 'up', 'down', 'left', 'right'
 
 def main():
   FLAGS(sys.argv)
@@ -51,100 +63,71 @@ def main():
     act_params = {
       'make_obs_ph': make_obs_ph,
       'q_func': model,
-      'num_actions': 4,
+      'num_actions': 3,
     }
 
     act = deep_Defeat_zerglings.load(
-      "defeat_zerglings.pkl", act_params=act_params)
+      "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.0.pkl", act_params=act_params)
 
     while True:
+        episode_rewards = [0.0]
+        saved_mean_reward = None
+        episode_rew = 0
+        rew = 0
+        done = False
 
-      obs = env.reset()
-      episode_rew = 0
+        obs = env.reset()
+        obs, xy_per_marine = common.init(env, obs)
 
-      done = False
+        while not done:
 
-      while not done:
+            obs, screen, player = common.select_marine(env, obs)
 
-        obs, screen, player = common.select_marine(env, obs)
+            action = act(
+                np.array(screen)[None])[0]
 
-        action = act(
-            np.array(screen)[None])[0]
-        coord = [player[0], player[1]]
+            obs, new_action = common.marine_action(env, obs, player, action)
 
-        obs, new_action = common.marine_action(env, obs, player, action)
+            army_count = env._obs[0].observation.player_common.army_count
 
-        army_count = env._obs[0].observation.player_common.army_count
+            try:
+                if army_count > 0 and _ATTACK_SCREEN in obs[0].observation["available_actions"]:
+                    obs = env.step(actions=new_action)
+                else:
+                    new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+                    obs = env.step(actions=new_action)
+            except Exception as e:
+                # print(e)
+                1  # Do nothing
 
-        try:
-            if army_count > 0 and _ATTACK_SCREEN in obs[0].observation["available_actions"]:
-                obs = env.step(actions=new_action)
-            else:
-                new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
-                obs = env.step(actions=new_action)
-        except Exception as e:
-            # print(e)
-            1  # Do nothing
+            player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
+            new_screen = player_relative
 
-        player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-        new_screen = player_relative
+            rew += obs[0].reward
 
-        rew += obs[0].reward
+            done = obs[0].step_type == environment.StepType.LAST
 
-        done = obs[0].step_type == environment.StepType.LAST
+            episode_rewards[-1] += rew
+            reward = episode_rewards[-1]
 
-        selected = obs[0].observation["screen"][_SELECTED]
-        player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-        # test for me-----------------------------
-        # a = common.enemy_postion(obs, 1)
-        # print(len(a))
-        screen_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-        player_y, player_x = (screen_relative == _PLAYER_FRIENDLY).nonzero()
-        enemy_y, enemy_x = (screen_relative == _PLAYER_HOSTILE).nonzero()
-        army1_count = obs[0].observation["player"][8]
-        # print("the army num is {0} and the pix_num is {1}".format(army1_count, player_x.size))
-        # print("the enemy pix_num is {0}".format(enemy_x.size))
-        # test for me----------------------------
-        if (len(player_y) > 0):
-            player = [int(player_x.mean()), int(player_y.mean())]
+            if done:
+                if (len(episode_rewards)>100) :
+                    mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
+                    num_episodes = len(episode_rewards)
+                    print("the mean 100ep_reward is {0}".format(mean_100ep_reward))
+                print("Episode Reward : %s" % episode_rewards[-1])
 
-        if (len(player) == 2):
+                obs = env.reset()
+                player_relative = obs[0].observation["screen"][
+                    _PLAYER_RELATIVE]
 
-            if (player[0] > 32):
-                new_screen = common.shift(LEFT, player[0] - 32, new_screen)
-            elif (player[0] < 32):
-                new_screen = common.shift(RIGHT, 32 - player[0],
-                                          new_screen)
+                screen = player_relative
 
-            if (player[1] > 32):
-                new_screen = common.shift(UP, player[1] - 32, new_screen)
-            elif (player[1] < 32):
-                new_screen = common.shift(DOWN, 32 - player[1], new_screen)
+                group_list = common.init(env, obs)
 
-        # Store transition in the replay buffer.
-        replay_buffer.add(screen, action, rew, new_screen, float(done))
-        screen = new_screen
-
-        episode_rewards[-1] += rew
-        reward = episode_rewards[-1]
-        # test for me-----------------------------
-        # test for me----------------------------
-
-        if done:
-            print("Episode Reward : %s" % episode_rewards[-1])
-            obs = env.reset()
-            player_relative = obs[0].observation["screen"][
-                _PLAYER_RELATIVE]
-
-            screen = player_relative
-
-            group_list = common.init(env, obs)
-
-            # Select all marines first
-            # env.step(actions=[sc2_actions.FunctionCall(_SELECT_UNIT, [_SELECT_ALL])])
-            episode_rewards.append(0.0)
-
-            reset = True
+                # Select all marines first
+                # env.step(actions=[sc2_actions.FunctionCall(_SELECT_UNIT, [_SELECT_ALL])])
+                episode_rewards=[0.0]
 
 
 if __name__ == '__main__':
