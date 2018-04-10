@@ -363,7 +363,6 @@ act: ActWrapper
       #test for me-----------------------------
       # test for me----------------------------
 
-
       if done:
         print("Episode Reward : %s" % episode_rewards[-1])
         obs = env.reset()
