@@ -319,8 +319,7 @@ act: ActWrapper
         #print(e)
         1  # Do nothing
 
-      player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-      new_screen = player_relative
+      new_screen = obs[0].observation["screen"][_UNIT_TYPE]
 
       rew += obs[0].reward
 
@@ -328,31 +327,6 @@ act: ActWrapper
 
       selected = obs[0].observation["screen"][_SELECTED]
       player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-      #test for me-----------------------------
-      # a = common.enemy_postion(obs, 1)
-      # print(len(a))
-      screen_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-      player_y, player_x = (screen_relative == _PLAYER_FRIENDLY).nonzero()
-      enemy_y, enemy_x = (screen_relative == _PLAYER_HOSTILE).nonzero()
-      army1_count = obs[0].observation["player"][8]
-      # print("the army num is {0} and the pix_num is {1}".format(army1_count, player_x.size))
-      # print("the enemy pix_num is {0}".format(enemy_x.size))
-      # test for me----------------------------
-      if (len(player_y) > 0):
-        player = [int(player_x.mean()), int(player_y.mean())]
-
-      if (len(player) == 2):
-
-        if (player[0] > 32):
-          new_screen = common.shift(LEFT, player[0] - 32, new_screen)
-        elif (player[0] < 32):
-          new_screen = common.shift(RIGHT, 32 - player[0],
-                                    new_screen)
-
-        if (player[1] > 32):
-          new_screen = common.shift(UP, player[1] - 32, new_screen)
-        elif (player[1] < 32):
-          new_screen = common.shift(DOWN, 32 - player[1], new_screen)
 
       # Store transition in the replay buffer.
       replay_buffer.add(screen, action, rew, new_screen, float(done))
@@ -360,8 +334,6 @@ act: ActWrapper
 
       episode_rewards[-1] += rew
       reward = episode_rewards[-1]
-      #test for me-----------------------------
-      # test for me----------------------------
 
       if done:
         print("Episode Reward : %s" % episode_rewards[-1])
