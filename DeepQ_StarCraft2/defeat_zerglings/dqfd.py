@@ -26,6 +26,7 @@ _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 
 _UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
 _SELECTED = features.SCREEN_FEATURES.selected.index
+
 _PLAYER_FRIENDLY = 1
 _PLAYER_NEUTRAL = 3  # beacon/minerals
 _PLAYER_HOSTILE = 4
@@ -122,7 +123,7 @@ def learn(env,
           exploration_final_eps=0.02,
           train_freq=1,
           batch_size=32,
-          print_freq=1,
+          print_freq=20,
           checkpoint_freq=10000,
           learning_starts=1000,
           gamma=1.0,
@@ -252,24 +253,19 @@ act: ActWrapper
   saved_mean_reward = None
 
   obs = env.reset()
-  # do not Select all marines first
-  # obs = env.step(actions=[
-  #   sc2_actions.FunctionCall(_SELECT_UNIT, [[3], [0]])
-  # ])
-
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-
-  screen = player_relative
-
+  screen = obs[0].observation["screen"][_UNIT_TYPE]
   obs, xy_per_marine = common.init(env, obs)
-
   group_id = 0
+  old_num = 0
   reset = True
+
   with tempfile.TemporaryDirectory() as td:
     model_saved = False
     model_file = os.path.join(td, "model")
 
     for t in range(max_timesteps):
+      if t == 0:
+        Action_Choose = False
       if callback is not None:
         if callback(locals(), globals()):
           break
@@ -296,59 +292,53 @@ act: ActWrapper
         kwargs['update_param_noise_scale'] = True
 
       # custom process for DefeatZerglingsAndBanelings
-
-      obs, screen, player = common.select_marine(env, obs)
-
-      action = act(
-        np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
-      reset = False
       rew = 0
+      reset = False
+      Action_Choose = not (Action_Choose)
 
-      new_action = None
+      if Action_Choose==True:
+        #the first action
+        obs, screen, player = common.select_marine(env, obs)
+      else:
+        #the second action
+        screen = obs[0].observation["screen"][_UNIT_TYPE]
+        action = act(
+          np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
+        new_action = None
 
-      obs, new_action = common.marine_action(env, obs, player, action)
-      army_count = env._obs[0].observation.player_common.army_count
+        obs, new_action = common.marine_action(env, obs, player, action)
+        army_count = env._obs[0].observation.player_common.army_count
 
-      try:
-        if army_count > 0 and _ATTACK_SCREEN in obs[0].observation["available_actions"]:
-          obs = env.step(actions=new_action)
-        else:
+        try:
+          if army_count > 0   and   action== 1                    and (_ATTACK_SCREEN in obs[0].observation["available_actions"]):
+            obs = env.step(actions=new_action)
+          elif army_count > 0 and ((action== 0)or (action == 2))  and (_MOVE_SCREEN   in obs[0].observation["available_actions"]):
+            obs = env.step(actions=new_action)
+          else:
+            new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+            obs = env.step(actions=new_action)
+        except Exception as e:
+          print(new_action)
+          print(e)
           new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
           obs = env.step(actions=new_action)
-      except Exception as e:
-        #print(e)
-        1  # Do nothing
-
-      new_screen = obs[0].observation["screen"][_UNIT_TYPE]
+        new_screen = obs[0].observation['screen'][_UNIT_TYPE]
 
       rew += obs[0].reward
-
       done = obs[0].step_type == environment.StepType.LAST
-
-      selected = obs[0].observation["screen"][_SELECTED]
-      player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-
-      # Store transition in the replay buffer.
-      replay_buffer.add(screen, action, rew, new_screen, float(done))
-      screen = new_screen
-
       episode_rewards[-1] += rew
       reward = episode_rewards[-1]
 
+      if Action_Choose==False:  #only store the screen after the action is done
+        replay_buffer.add(screen, action, rew, new_screen, float(done))
+
       if done:
-        print("Episode Reward : %s" % episode_rewards[-1])
+        # print("Episode Reward : %s" % episode_rewards[-1])
         obs = env.reset()
-        player_relative = obs[0].observation["screen"][
-          _PLAYER_RELATIVE]
-
-        screen = player_relative
-
+        screen = obs[0].observation["screen"][_UNIT_TYPE]
         group_list = common.init(env, obs)
-
         # Select all marines first
-        #env.step(actions=[sc2_actions.FunctionCall(_SELECT_UNIT, [_SELECT_ALL])])
         episode_rewards.append(0.0)
-
         reset = True
 
       if t > learning_starts and t % train_freq == 0:
@@ -373,10 +363,19 @@ act: ActWrapper
         # Update target network periodically.
         update_target()
 
-      mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
       num_episodes = len(episode_rewards)
+      #test for me
+      if num_episodes > old_num:
+        old_num = num_episodes
+        print("now the episode is {}".format(num_episodes))
+      #test for me
+      if(num_episodes > 102):
+        mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
+      else:
+        mean_100ep_reward = round(np.mean(episode_rewards), 1)
       if done and print_freq is not None and len(
           episode_rewards) % print_freq == 0:
+        print("get the log")
         logger.record_tabular("steps", t)
         logger.record_tabular("episodes", num_episodes)
         logger.record_tabular("reward", reward)
