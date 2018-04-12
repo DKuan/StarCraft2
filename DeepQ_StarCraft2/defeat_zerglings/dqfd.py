@@ -292,7 +292,6 @@ act: ActWrapper
         kwargs['update_param_noise_scale'] = True
 
       # custom process for DefeatZerglingsAndBanelings
-      rew = 0
       reset = False
       Action_Choose = not (Action_Choose)
 
@@ -324,7 +323,7 @@ act: ActWrapper
           obs = env.step(actions=new_action)
         new_screen = obs[0].observation['screen'][_UNIT_TYPE]
 
-      rew += obs[0].reward
+      rew = obs[0].reward
       done = obs[0].step_type == environment.StepType.LAST
       episode_rewards[-1] += rew
       reward = episode_rewards[-1]

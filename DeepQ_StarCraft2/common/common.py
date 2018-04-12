@@ -90,7 +90,7 @@ def check_group_list(env, obs):
     if (group[0] == 48):
       army_count += group[1]
 
-  if (army_count < env._obs[0].observation.player_common.army_count - 6): #need to be 5
+  if (army_count < env._obs[0].observation.player_common.army_count - 4): #need to be 5
       error = True
       if army_count != 0:
         print("the army count is {0}".format(army_count))

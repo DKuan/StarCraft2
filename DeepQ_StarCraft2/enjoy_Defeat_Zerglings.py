@@ -67,19 +67,20 @@ def main():
     }
 
     act = deep_Defeat_zerglings.load(
-      "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.0.pkl", act_params=act_params)
+      "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.9.pkl", act_params=act_params)
 
     while True:
         episode_rewards = [0.0]
         saved_mean_reward = None
         episode_rew = 0
         rew = 0
+        old_num = 0
         done = False
 
         obs = env.reset()
         obs, xy_per_marine = common.init(env, obs)
 
-        while not done:
+        while True:
 
             obs, screen, player = common.select_marine(env, obs)
 
@@ -91,19 +92,22 @@ def main():
             army_count = env._obs[0].observation.player_common.army_count
 
             try:
-                if army_count > 0 and _ATTACK_SCREEN in obs[0].observation["available_actions"]:
+                if army_count > 0 and action == 1 and (_ATTACK_SCREEN in obs[0].observation["available_actions"]):
+                    obs = env.step(actions=new_action)
+                elif army_count > 0 and ((action == 0) or (action == 2)) and (
+                        _MOVE_SCREEN in obs[0].observation["available_actions"]):
                     obs = env.step(actions=new_action)
                 else:
                     new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
                     obs = env.step(actions=new_action)
             except Exception as e:
-                # print(e)
-                1  # Do nothing
+                print(new_action)
+                print(e)
 
             player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
             new_screen = player_relative
 
-            rew += obs[0].reward
+            rew = obs[0].reward
 
             done = obs[0].step_type == environment.StepType.LAST
 
@@ -111,12 +115,6 @@ def main():
             reward = episode_rewards[-1]
 
             if done:
-                if (len(episode_rewards)>100) :
-                    mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
-                    num_episodes = len(episode_rewards)
-                    print("the mean 100ep_reward is {0}".format(mean_100ep_reward))
-                print("Episode Reward : %s" % episode_rewards[-1])
-
                 obs = env.reset()
                 player_relative = obs[0].observation["screen"][
                     _PLAYER_RELATIVE]
@@ -127,7 +125,19 @@ def main():
 
                 # Select all marines first
                 # env.step(actions=[sc2_actions.FunctionCall(_SELECT_UNIT, [_SELECT_ALL])])
-                episode_rewards=[0.0]
+                episode_rewards.append(0.0)
+
+            # test for me
+            num_episodes = len(episode_rewards)
+            if (num_episodes > 102):
+                mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
+            else:
+                mean_100ep_reward = round(np.mean(episode_rewards), 1)
+
+            if num_episodes > old_num:
+                old_num = num_episodes
+                print("now the episode is {}".format(num_episodes))
+                print("the mean 100ep_reward is {0}".format(mean_100ep_reward))
 
 
 if __name__ == '__main__':

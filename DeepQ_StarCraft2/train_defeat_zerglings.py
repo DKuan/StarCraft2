@@ -26,10 +26,10 @@ flags.DEFINE_float("exploration_fraction",  0.5, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, "just gamma")
 flags.DEFINE_float("lr",  0.0001, "Learning rate")
 
-flags.DEFINE_integer("train_freq", 2, "the freq that you train your model")
+flags.DEFINE_integer("train_freq", 5, "the freq that you train your model")
+flags.DEFINE_integer("learning_starts", 10000, "Learning start time")
 flags.DEFINE_integer("timesteps", 2000000, "most Steps to train")
 flags.DEFINE_integer("num_actions", 3, "numbers of your action")
-flags.DEFINE_integer("learning_starts", 1000, "Learning start time")
 flags.DEFINE_integer("step_mul", 1, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 flags.DEFINE_integer("buffer_size", 20000, "the number of actions that you want to store")
@@ -108,7 +108,7 @@ def deepq_callback(locals, globals):
           (locals['mean_100ep_reward'], max_mean_reward))
 
     if ('mean_100ep_reward' in locals
-            and locals['num_episodes'] >= 30
+            and locals['num_episodes'] >= 500
             and locals['mean_100ep_reward'] > max_mean_reward
     ):
       if(not os.path.exists(os.path.join(PROJ_DIR,'models/deepq/'))):
