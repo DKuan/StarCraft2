@@ -68,7 +68,7 @@ def main():
         }
 
         act = deep_Defeat_zerglings.load(
-            "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_112.6.pkl", act_params=act_params)
+            "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_93.4.pkl", act_params=act_params)
 
         while True:
             rew = 0
