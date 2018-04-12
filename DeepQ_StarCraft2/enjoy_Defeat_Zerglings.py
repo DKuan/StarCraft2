@@ -1,18 +1,20 @@
 import sys
-
+import datetime
 from absl import flags
 import baselines.deepq.utils as U
 import baselines.common.tf_util as TU
 import numpy as np
+from common import common
 from baselines import deepq
 from pysc2.env import environment
 from pysc2.env import sc2_env
 from pysc2.lib import actions
-from pysc2.lib import actions as sc2_actions
 from pysc2.lib import features
-from common import common
-
+from pysc2.lib import actions as sc2_actions
 import defeat_zerglings.dqfd as deep_Defeat_zerglings
+
+from baselines import logger
+from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
@@ -39,17 +41,30 @@ _SELECT_ALL = [0]
 
 UP, DOWN, LEFT, RIGHT = 'up', 'down', 'left', 'right'
 
+#to record the output
+start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
+logdir = "./tensorboard/enjoy/%s" % start_time
+Logger.DEFAULT \
+      = Logger.CURRENT \
+      = Logger(dir=None,
+               output_formats=[TensorBoardOutputFormat(logdir)])
+
 FLAGS = flags.FLAGS
+flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
+flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.9.pkl",
+                    "the model you has trained.")
+flags.DEFINE_bool("visualize", False, "if you want to see the game")
 flags.DEFINE_integer("num_actions", 3, "numbers of your action")
 flags.DEFINE_integer("step_mul", 2, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 
+
 def main():
     FLAGS(sys.argv)
     with sc2_env.SC2Env(
-            map_name="DefeatZerglingsAndBanelings",
+            map_name=FLAGS.map_name,
             step_mul=FLAGS.step_mul,
-            visualize=True,
+            visualize=FLAGS.visualize,
             game_steps_per_episode=FLAGS.episode_steps * FLAGS.step_mul) as env:
 
         model = deepq.models.cnn_to_mlp(
@@ -68,7 +83,7 @@ def main():
         }
 
         act = deep_Defeat_zerglings.load(
-            "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_93.4.pkl", act_params=act_params)
+            FLAGS.trained_model, act_params=act_params)
 
         while True:
             rew = 0
@@ -130,9 +145,12 @@ def main():
 
                 if num_episodes > old_num:
                     old_num = num_episodes
-                    print("now the episode is {}".format(num_episodes))
-                    print("the mean 100ep_reward is {0}".format(mean_100ep_reward))
-
+                    logger.record_tabular("the number of episode", num_episodes)
+                    logger.record_tabular("reward now", episode_rewards[-2])
+                    logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
+                    logger.dump_tabular()
+                    print("the number of episode", num_episodes)
+                    print("mean 100 episode reward",mean_100ep_reward)
 
 
 if __name__ == '__main__':

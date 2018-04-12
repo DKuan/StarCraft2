@@ -207,7 +207,7 @@ def marine_action(env, obs, player, action):
 
     new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
 
-  elif (action == 0 and closest_friend != None and min_dist_friend < 3):
+  elif (action == 4 and closest_friend != None and min_dist_friend < 3):
     # Friendly marine is too close => Sparse!
 
     mean_friend = [int(friendly_x.mean()), int(friendly_x.mean())]
@@ -235,7 +235,7 @@ def marine_action(env, obs, player, action):
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
 
-  elif (action <= 1):  #Attack
+  elif (action <= 5):  #Attack
 
     # nearest enemy
 
@@ -247,7 +247,7 @@ def marine_action(env, obs, player, action):
 
     #print("action : %s Attack Coord : %s" % (action, coord))
 
-  elif (action == 2):  # Oppsite direcion from enemy
+  elif (action == 6):  # Oppsite direcion from enemy
 
     # nearest enemy opposite
 
@@ -274,25 +274,25 @@ def marine_action(env, obs, player, action):
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
 
-  elif (action == 3):  #UP
+  elif (action == 0):  #UP
     coord = [player[0], player[1] - 3]
     new_action = [
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
 
-  elif (action == 4):  #DOWN
+  elif (action == 1):  #DOWN
     coord = [player[0], player[1] + 3]
     new_action = [
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
 
-  elif (action == 5):  #LEFT
+  elif (action == 2):  #LEFT
     coord = [player[0] - 3, player[1]]
     new_action = [
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
 
-  elif (action == 6):  #RIGHT
+  elif (action == 3):  #RIGHT
     coord = [player[0] + 3, player[1]]
     new_action = [
       sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
