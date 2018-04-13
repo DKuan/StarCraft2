@@ -20,18 +20,20 @@ flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
 
 flags.DEFINE_boolean("dueling", True, "dueling")
 flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
+flags.DEFINE_bool("visualize", True, "if you want to see the game")
 
 flags.DEFINE_float("exploration_final_eps",  0.01, "your final Exploration Fraction")
-flags.DEFINE_float("exploration_fraction",  0.5, "Exploration Fraction")
+flags.DEFINE_float("exploration_fraction",  0.75, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
 flags.DEFINE_float("lr",  0.0001, "Learning rate")
 
 flags.DEFINE_integer("train_freq", 5, "the freq that you train your model")
+flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
 flags.DEFINE_integer("learning_starts", 10000, "Learning start time")
-flags.DEFINE_integer("timesteps", 2000000, "most Steps to train")
+flags.DEFINE_integer("timesteps", 1000000, "most Steps to train")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
 flags.DEFINE_integer("step_mul", 1, "the time of every step spends")
-flags.DEFINE_integer("episode_steps", 2800, "the steps of every episode spends")# 2000
+flags.DEFINE_integer("episode_steps", 2600, "the steps of every episode spends")# 2000
 flags.DEFINE_integer("buffer_size", 20000, "the number of actions that you want to store")
 flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
 
@@ -73,8 +75,8 @@ def main():
   with sc2_env.SC2Env(
       map_name="DefeatZerglingsAndBanelings",
       step_mul=FLAGS.step_mul,
-      visualize=False,
-      game_steps_per_episode=FLAGS.episode_steps * FLAGS.step_mul) as env:
+      visualize=FLAGS.visualize,
+      game_steps_per_episode= FLAGS.episode_steps) as env:
 
     model = deepq.models.cnn_to_mlp(
       convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
@@ -87,6 +89,7 @@ def main():
       q_func=model,
       num_actions=FLAGS.num_actions,
       lr=FLAGS.lr,
+      print_freq= FLAGS.print_freq,
       max_timesteps=FLAGS.timesteps,
       buffer_size=FLAGS.buffer_size,
       exploration_fraction=FLAGS.exploration_fraction,

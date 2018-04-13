@@ -179,126 +179,54 @@ def select_marine(env, obs):
   return obs, screen, player
 
 
+
+def check_coord(coord):
+    if (coord[0] < 0):
+        coord[0] = 0
+    elif (coord[0] > 63):
+        coord[0] = 63
+
+    if (coord[1] < 0):
+        coord[1] = 0
+    elif (coord[1] > 63):
+        coord[1] = 63
+    return coord
+
+
 def marine_action(env, obs, player, action):
 
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-
-  enemy_y, enemy_x = (player_relative == _PLAYER_HOSTILE).nonzero()
-
-  closest, min_dist = None, None
-
   if (len(player) == 2):
-    for p in zip(enemy_x, enemy_y):
-      dist = np.linalg.norm(np.array(player) - np.array(p))
-      if not min_dist or dist < min_dist:
-        closest, min_dist = p, dist
+      if (action == 0):  # UP
+          coord = [player[0], player[1] - 4]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
 
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-  friendly_y, friendly_x = (player_relative == _PLAYER_FRIENDLY).nonzero()
+      elif (action == 1):  # DOWN
+          coord = [player[0], player[1] + 4]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
 
-  closest_friend, min_dist_friend = None, None
-  if (len(player) == 2):
-    for p in zip(friendly_x, friendly_y):
-      dist = np.linalg.norm(np.array(player) - np.array(p))
-      if not min_dist_friend or dist < min_dist_friend:
-        closest_friend, min_dist_friend = p, dist
+      elif (action == 3):  # LEFT
+          coord = [player[0] - 4, player[1]]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
 
-  if (closest == None):
-
-    new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
-
-  elif (action == 4 and closest_friend != None and min_dist_friend < 3):
-    # Friendly marine is too close => Sparse!
-
-    mean_friend = [int(friendly_x.mean()), int(friendly_x.mean())]
-
-    diff = np.array(player) - np.array(closest_friend)
-
-    norm = np.linalg.norm(diff)
-
-    if (norm != 0):
-      diff = diff / norm
-
-    coord = np.array(player) + diff * 4
-
-    if (coord[0] < 0):
-      coord[0] = 0
-    elif (coord[0] > 63):
-      coord[0] = 63
-
-    if (coord[1] < 0):
-      coord[1] = 0
-    elif (coord[1] > 63):
-      coord[1] = 63
-
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-  elif (action <= 5):  #Attack
-
-    # nearest enemy
-
-    coord = closest
-
-    new_action = [
-      sc2_actions.FunctionCall(_ATTACK_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-    #print("action : %s Attack Coord : %s" % (action, coord))
-
-  elif (action == 6):  # Oppsite direcion from enemy
-
-    # nearest enemy opposite
-
-    diff = np.array(player) - np.array(closest)
-
-    norm = np.linalg.norm(diff)
-
-    if (norm != 0):
-      diff = diff / norm
-
-    coord = np.array(player) + diff * 7
-
-    if (coord[0] < 0):
-      coord[0] = 0
-    elif (coord[0] > 63):
-      coord[0] = 63
-
-    if (coord[1] < 0):
-      coord[1] = 0
-    elif (coord[1] > 63):
-      coord[1] = 63
-
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-  elif (action == 0):  #UP
-    coord = [player[0], player[1] - 3]
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-  elif (action == 1):  #DOWN
-    coord = [player[0], player[1] + 3]
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-  elif (action == 2):  #LEFT
-    coord = [player[0] - 3, player[1]]
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-  elif (action == 3):  #RIGHT
-    coord = [player[0] + 3, player[1]]
-    new_action = [
-      sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-    ]
-
-    #print("action : %s Back Coord : %s" % (action, coord))
+      elif (action == 2):  # RIGHT
+          coord = [player[0] + 4, player[1]]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
+      else:
+          new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+  else:
+      new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
 
   return obs, new_action
 

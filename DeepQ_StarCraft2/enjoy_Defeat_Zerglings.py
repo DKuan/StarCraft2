@@ -51,12 +51,12 @@ Logger.DEFAULT \
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.9.pkl",
+flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_33.6.pkl",
                     "the model you has trained.")
-flags.DEFINE_bool("visualize", False, "if you want to see the game")
-flags.DEFINE_integer("num_actions", 3, "numbers of your action")
-flags.DEFINE_integer("step_mul", 2, "the time of every step spends")
-flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
+flags.DEFINE_bool("visualize", True, "if you want to see the game")
+flags.DEFINE_integer("num_actions", 4, "numbers of your action")
+flags.DEFINE_integer("step_mul", 4, "the time of every step spends")
+flags.DEFINE_integer("episode_steps", 2800, "the steps of every episode spends")
 
 
 def main():
@@ -108,6 +108,7 @@ def main():
                     screen = obs[0].observation["screen"][_UNIT_TYPE]
                     action = act(
                         np.array(screen)[None])[0]
+                    print("the action you choose is {}".format(action))
                     obs, new_action = common.marine_action(env, obs, player, action)
                     army_count = env._obs[0].observation.player_common.army_count
 
@@ -145,8 +146,9 @@ def main():
 
                 if num_episodes > old_num:
                     old_num = num_episodes
+                    if old_num>2:
+                        logger.record_tabular("reward now", episode_rewards[-2])
                     logger.record_tabular("the number of episode", num_episodes)
-                    logger.record_tabular("reward now", episode_rewards[-2])
                     logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
                     logger.dump_tabular()
                     print("the number of episode", num_episodes)
