@@ -122,8 +122,8 @@ def learn(env,
           exploration_fraction=0.1,
           exploration_final_eps=0.02,
           train_freq=1,
-          batch_size=32,
-          print_freq=20,
+          batch_size=100,
+          print_freq=15,
           checkpoint_freq=10000,
           learning_starts=1000,
           gamma=1.0,
@@ -300,7 +300,6 @@ act: ActWrapper
         obs, screen, player = common.select_marine(env, obs)
       else:
         #the second action
-        screen = obs[0].observation["screen"][_UNIT_TYPE]
         action = act(
           np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
         new_action = None
@@ -309,9 +308,7 @@ act: ActWrapper
         army_count = env._obs[0].observation.player_common.army_count
 
         try:
-          if army_count > 0   and   action== 1                    and (_ATTACK_SCREEN in obs[0].observation["available_actions"]):
-            obs = env.step(actions=new_action)
-          elif army_count > 0 and ((action== 0)or (action == 2))  and (_MOVE_SCREEN   in obs[0].observation["available_actions"]):
+          if army_count > 0 and (_MOVE_SCREEN   in obs[0].observation["available_actions"]):
             obs = env.step(actions=new_action)
           else:
             new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
@@ -321,7 +318,11 @@ act: ActWrapper
           print(e)
           new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
           obs = env.step(actions=new_action)
-        new_screen = obs[0].observation['screen'][_UNIT_TYPE]
+        #get the new screen in action 2
+        player_y, player_x = np.nonzero(obs[0].observation["screen"][_SELECTED] == 1)
+        new_screen = obs[0].observation["screen"][_UNIT_TYPE]
+        for i in range(len(player_y)):
+          new_screen[player_y[i]][player_x[i]] = 49
 
       rew = obs[0].reward
       done = obs[0].step_type == environment.StepType.LAST

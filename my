@@ -6,3 +6,9 @@ https://cgnicholls.github.io/reinforcement-learning/2017/03/27/a3c.html   a3c co
 
 111
 https://blog.csdn.net/mycwq/article/details/49443775
+
+2018-4-13
+ exploration_fraction 不能设置的太大，过大会导致后面变异朝着不太好的方向发展，进化到一定的地步就按照	训练的比较好的结果一直走就好了，后半段过度的变异会导致模型效果的下降
+
+
+

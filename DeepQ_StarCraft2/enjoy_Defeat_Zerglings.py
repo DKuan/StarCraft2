@@ -51,10 +51,10 @@ Logger.DEFAULT \
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_107.9.pkl",
+flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_44.6.pkl",
                     "the model you has trained.")
-flags.DEFINE_bool("visualize", False, "if you want to see the game")
-flags.DEFINE_integer("num_actions", 3, "numbers of your action")
+flags.DEFINE_bool("visualize", True, "if you want to see the game")
+flags.DEFINE_integer("num_actions", 4, "numbers of your action")
 flags.DEFINE_integer("step_mul", 2, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 
@@ -98,25 +98,19 @@ def main():
             obs, xy_per_marine = common.init(env, obs)
 
             while True:
-
                 Action_Choose = not (Action_Choose)
                 if Action_Choose == True:
                     # the first action
                     obs, screen, player = common.select_marine(env, obs)
                 else:
                     # the second action
-                    screen = obs[0].observation["screen"][_UNIT_TYPE]
                     action = act(
                         np.array(screen)[None])[0]
                     obs, new_action = common.marine_action(env, obs, player, action)
                     army_count = env._obs[0].observation.player_common.army_count
 
                     try:
-                        if army_count > 0 and action == 1 and (
-                                _ATTACK_SCREEN in obs[0].observation["available_actions"]):
-                            obs = env.step(actions=new_action)
-                        elif army_count > 0 and ((action == 0) or (action == 2)) and (
-                                _MOVE_SCREEN in obs[0].observation["available_actions"]):
+                        if army_count > 0 and (_MOVE_SCREEN in obs[0].observation["available_actions"]):
                             obs = env.step(actions=new_action)
                         else:
                             new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
@@ -145,8 +139,9 @@ def main():
 
                 if num_episodes > old_num:
                     old_num = num_episodes
+                    if old_num>2:
+                        logger.record_tabular("reward now", episode_rewards[-2])
                     logger.record_tabular("the number of episode", num_episodes)
-                    logger.record_tabular("reward now", episode_rewards[-2])
                     logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
                     logger.dump_tabular()
                     print("the number of episode", num_episodes)
