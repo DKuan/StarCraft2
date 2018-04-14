@@ -1,3 +1,4 @@
+# four _ udlr
 import sys
 import os
 import datetime
@@ -22,6 +23,7 @@ PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
 start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
 
 FLAGS = flags.FLAGS
+# four _ udlr
 flags.DEFINE_string("algorithm", "deepq", "RL algorithm to use.")
 flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
 
@@ -30,21 +32,20 @@ flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
 flags.DEFINE_bool("visualize", False, "if you want to see the game")
 
 flags.DEFINE_float("exploration_final_eps",  0.01, "your final Exploration Fraction")
-flags.DEFINE_float("exploration_fraction",  0.53, "Exploration Fraction")
+flags.DEFINE_float("exploration_fraction",  0.47, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
-flags.DEFINE_float("lr",  0.0001, "Learning rate")
+flags.DEFINE_float("lr",  0.001, "Learning rate")
 
-flags.DEFINE_integer("train_freq", 8, "the freq that you train your model")
-flags.DEFINE_integer("batch_size", 150, "the number of your examples that you want to train your model")
+flags.DEFINE_integer("train_freq", 100, "the freq that you train your model")
+flags.DEFINE_integer("batch_size", 1500, "the number of your examples that you want to train your model")
 flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
-flags.DEFINE_integer("learning_starts", 10000, "Learning start time")
+flags.DEFINE_integer("learning_starts", 150000, "Learning start time")
 flags.DEFINE_integer("timesteps", 2500000, "most Steps to train")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
-flags.DEFINE_integer("step_mul", 2, "the time of every step spends")
+flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")# 2000
-flags.DEFINE_integer("buffer_size", 20000, "the number of actions that you want to store")
+flags.DEFINE_integer("buffer_size", 45000, "the number of actions that you want to store")
 flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
-
 
 def main():
   FLAGS(sys.argv)
@@ -81,7 +82,7 @@ def main():
       game_steps_per_episode= FLAGS.episode_steps) as env:
 
     model = deepq.models.cnn_to_mlp(
-      convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
+      convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],
       hiddens=[256],
       dueling=True
     )

@@ -96,7 +96,6 @@ class ActWrapper(object):
 
 def load(path, act_params, num_cpu=16):
   """Load act function that was returned by learn function.
-
 Parameters
 ----------
 path: str
@@ -331,16 +330,17 @@ act: ActWrapper
 
       if Action_Choose==False:  #only store the screen after the action is done
         replay_buffer.add(screen, action, rew, new_screen, float(done))
+        mirror_new_screen, mirror_action = common.map_mirror(new_screen, action)
+        mirror_screen = common._map_mirror(screen)
+        replay_buffer.add(mirror_screen, mirror_action, rew, mirror_new_screen, float(done))
 
       if done:
-        # print("Episode Reward : %s" % episode_rewards[-1])
         obs = env.reset()
-        screen = obs[0].observation["screen"][_UNIT_TYPE]
+        Action_Choose = False
         group_list = common.init(env, obs)
-        # Select all marines first
         episode_rewards.append(0.0)
-        reset = True
 
+      #train our model use the data from the replay
       if t > learning_starts and t % train_freq == 0:
         # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
         if prioritized_replay:
@@ -359,16 +359,18 @@ act: ActWrapper
           replay_buffer.update_priorities(batch_idxes,
                                           new_priorities)
 
+      # update our model's target
       if t > learning_starts and t % target_network_update_freq == 0:
         # Update target network periodically.
         update_target()
 
       num_episodes = len(episode_rewards)
-      #test for me
+
+      #tip to tell us the episode
       if num_episodes > old_num:
         old_num = num_episodes
-        print("now the episode is {}".format(num_episodes))
-      #test for me
+        print("now the episode is {} the time_step is {}".format(num_episodes, t))
+
       if(num_episodes > 102):
         mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
       else:
@@ -385,6 +387,7 @@ act: ActWrapper
                               int(100 * exploration.value(t)))
         logger.dump_tabular()
 
+      #model save
       if (checkpoint_freq is not None and t > learning_starts
           and num_episodes > 100 and t % checkpoint_freq == 0):
         if saved_mean_reward is None or mean_100ep_reward > saved_mean_reward:

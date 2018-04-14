@@ -3,6 +3,7 @@ import numpy as np
 from pysc2.lib import actions as sc2_actions
 from pysc2.lib import features
 from pysc2.lib import actions
+from pysc2.env import environment
 import common.Common_T as common_T
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
@@ -127,6 +128,10 @@ def select_marine(env, obs):
             screen = obs[0].observation["screen"][_UNIT_TYPE]
             for i in range(len(player_y)):
                 screen[player_y[i]][player_x[i]] = 49
+            #in case done
+            done = obs[0].step_type == environment.StepType.LAST
+            if done:
+                return obs, screen, [[0], [0]]
     else:
         player_x = [1]
         player_y = [1]
@@ -138,6 +143,30 @@ def select_marine(env, obs):
         return obs, screen, [player_x[0], player_y[0]]
     except Exception as e:
         a = 1
+
+def _map_mirror(screen):
+    length = len(screen[0])
+    mirror_screen = np.empty([length, length], int)
+    for i in range(length):
+        for j in range(length):
+            np.put(mirror_screen, j + i * length, screen[i][length - j - 1])
+
+    return mirror_screen
+
+def map_mirror(screen, action):
+    length = len(screen[0])
+    mirror_screen = np.empty([length, length], int)
+    for i in range(length):
+        for j in range(length):
+            np.put(mirror_screen, j + i * length, screen[i][length - j - 1])
+
+    if (action == 3):  # LEFT
+        mirror_action = 2
+    elif (action == 2):  # RIGHT
+        mirror_action = 3
+    else:
+        mirror_action = 0
+    return mirror_screen, mirror_action
 
 
 def check_coord(coord):
@@ -151,7 +180,6 @@ def check_coord(coord):
     elif (coord[1] > 63):
         coord[1] = 63
     return coord
-
 
 def marine_action(env, obs, player, action):
 

@@ -51,11 +51,11 @@ Logger.DEFAULT \
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_44.6.pkl",
+flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_12.1.pkl",
                     "the model you has trained.")
 flags.DEFINE_bool("visualize", True, "if you want to see the game")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")
-flags.DEFINE_integer("step_mul", 2, "the time of every step spends")
+flags.DEFINE_integer("step_mul", 1, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 
 
@@ -127,6 +127,7 @@ def main():
 
                 if done:
                     obs = env.reset()
+                    Action_Choose = False
                     group_list = common.init(env, obs)
                     episode_rewards.append(0.0)
 

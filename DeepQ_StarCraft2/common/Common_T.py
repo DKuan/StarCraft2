@@ -33,6 +33,55 @@ _SELECT_UNIT = actions.FUNCTIONS.select_unit.id
 _SELECT_POINT = actions.FUNCTIONS.select_point.id
 
 
+def check_coord(coord):
+    if (coord[0] < 0):
+        coord[0] = 0
+    elif (coord[0] > 63):
+        coord[0] = 63
+
+    if (coord[1] < 0):
+        coord[1] = 0
+    elif (coord[1] > 63):
+        coord[1] = 63
+    return coord
+
+
+def marine_action(env, obs, player, action):
+
+  if (len(player) == 2):
+      if (action == 0):  # UP
+          coord = [player[0], player[1] - 10]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
+
+      elif (action == 1):  # DOWN
+          coord = [player[0], player[1] + 10]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
+
+      elif (action == 2):  # LEFT
+          coord = [player[0] - 10, player[1]]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
+
+      elif (action == 3):  # RIGHT
+          coord = [player[0] + 10, player[1]]
+          coord = check_coord(coord)
+          new_action = [
+              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+          ]
+      else:
+          new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+  else:
+      new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+
+  return obs, new_action
 
 
 def marine_action_old(env, obs, player, action):
