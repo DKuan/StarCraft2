@@ -3,6 +3,7 @@ import numpy as np
 from pysc2.lib import actions as sc2_actions
 from pysc2.lib import features
 from pysc2.lib import actions
+from pysc2.env import environment
 import common.Common_T as common_T
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
@@ -36,9 +37,7 @@ def init(env, obs):
   ])
 
   xy_per_marine = {}
-  army_count = env._obs[0].observation.player_common.army_count
   selected_s = obs[0].observation["single_select"][0]
-  selected_m = obs[0].observation["multi_select"]
   _pos_y, _pos_x = np.nonzero(obs[0].observation["screen"][_SELECTED] == 1)
 
   if _SELECT_UNIT in obs[0].observation["available_actions"]:
@@ -70,7 +69,6 @@ def init(env, obs):
 
   return obs, xy_per_marine
 
-
 def update_group_list(obs):
   control_groups = obs[0].observation["control_groups"]
   group_count = 0
@@ -81,14 +79,17 @@ def update_group_list(obs):
       group_list.append(id)
   return group_list
 
-
 def check_group_list(env, obs):
   error = False
   control_groups = obs[0].observation["control_groups"]
+  multi_select = obs[0].observation["multi_select"]
   army_count = 0
   for id, group in enumerate(control_groups):
     if (group[0] == 48):
       army_count += group[1]
+
+  if len(multi_select) > 0:
+      error = True
 
   if (army_count < env._obs[0].observation.player_common.army_count - 4): #need to be 5
       error = True
@@ -97,88 +98,65 @@ def check_group_list(env, obs):
 
   return error
 
-
 UP, DOWN, LEFT, RIGHT = 'up', 'down', 'left', 'right'
 
-
 def select_marine(env, obs):
-
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
-  screen = player_relative
-
-  group_list = update_group_list(obs)
-
-  if (check_group_list(env, obs)):
-    obs, xy_per_marine = init(env, obs)
+    player_y = []
     group_list = update_group_list(obs)
 
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
+    if (check_group_list(env, obs)):
+        obs, xy_per_marine = init(env, obs)
+        group_list = update_group_list(obs)
 
-  friendly_y, friendly_x = (player_relative == _PLAYER_FRIENDLY).nonzero()
-
-  enemy_y, enemy_x = (player_relative == _PLAYER_HOSTILE).nonzero()
-
-  player = []
-
-  danger_closest, danger_min_dist = None, None
-  for e in zip(enemy_x, enemy_y):
-    for p in zip(friendly_x, friendly_y):
-      dist = np.linalg.norm(np.array(p) - np.array(e))
-      if not danger_min_dist or dist < danger_min_dist:
-        danger_closest, danger_min_dist = p, dist
-
-  marine_closest, marine_min_dist = None, None
-  for e in zip(friendly_x, friendly_y):
-    for p in zip(friendly_x, friendly_y):
-      dist = np.linalg.norm(np.array(p) - np.array(e))
-      if not marine_min_dist or dist < marine_min_dist:
-        if dist >= 2:
-          marine_closest, marine_min_dist = p, dist
-
-  if (danger_min_dist != None and danger_min_dist <= 5):
-    obs = env.step(actions=[
-      sc2_actions.FunctionCall(_SELECT_POINT, [[0], danger_closest])
-    ])
-
-    selected = obs[0].observation["screen"][_SELECTED]
-    player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-    if (len(player_y) > 0):
-      player = [int(player_x.mean()), int(player_y.mean())]
-
-  elif (marine_closest != None and marine_min_dist <= 3):
-    obs = env.step(actions=[
-      sc2_actions.FunctionCall(_SELECT_POINT, [[0], marine_closest])
-    ])
-
-    selected = obs[0].observation["screen"][_SELECTED]
-    player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-    if (len(player_y) > 0):
-      player = [int(player_x.mean()), int(player_y.mean())]
-
-  else:
     # If there is no marine in danger, select random
-    while (len(group_list) > 0):
-      group_id = np.random.choice(group_list)
+    if  (len(group_list) > 0):
+        while(len(player_y)==0):
+            group_id = np.random.choice(group_list)
 
-      obs = env.step(actions=[
-        sc2_actions.FunctionCall(_SELECT_CONTROL_GROUP, [[
-          _CONTROL_GROUP_RECALL
-        ], [int(group_id)]])
-      ])
+            obs = env.step(actions=[
+                    sc2_actions.FunctionCall(_SELECT_CONTROL_GROUP, [[
+                    _CONTROL_GROUP_RECALL], [int(group_id)]])
+                    ])
+            player_y, player_x = np.nonzero(obs[0].observation["screen"][_SELECTED] == 1)
+            #to make our same type_screen different
+            screen = obs[0].observation["screen"][_UNIT_TYPE]
+            for i in range(len(player_y)):
+                screen[player_y[i]][player_x[i]] = 49
+            #in case done
+            done = obs[0].step_type == environment.StepType.LAST
+            if done:
+                return obs, screen, [[0], [0]]
+    else:
+        player_x = [1]
+        player_y = [1]
+        obs = env.step(actions=[
+            sc2_actions.FunctionCall(_NO_OP, [])
+        ])
+        screen = obs[0].observation["screen"][_UNIT_TYPE]
+    try:
+        return obs, screen, [player_x[0], player_y[0]]
+    except Exception as e:
+        a = 1
 
-      selected = obs[0].observation["screen"][_SELECTED]
-      player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
-      if (len(player_y) > 0):
-        player = [int(player_x.mean()), int(player_y.mean())]
-        break
-      else:
-        group_list.remove(group_id)
+def _map_mirror(screen):
+    #to make the replay mirror
+    length = len(screen[0])
+    mirror_screen = np.empty([length, length], int)
+    for i in range(length):
+        for j in range(length):
+            np.put(mirror_screen, j + i * length, screen[i][length - j - 1])
 
-  screen = obs[0].observation["screen"][_UNIT_TYPE]
+    return mirror_screen
 
-  return obs, screen, player
-
-
+def map_mirror(screen, action):
+    # to make the replay mirror
+    length = len(screen[0])
+    mirror_screen = np.empty([length, length], int)
+    for i in range(length):
+        for j in range(length):
+            np.put(mirror_screen, j + i * length, screen[i][length - j - 1])
+    mirror_action = action
+    return mirror_screen, mirror_action
 
 def check_coord(coord):
     if (coord[0] < 0):
@@ -194,44 +172,83 @@ def check_coord(coord):
 
 
 def marine_action(env, obs, player, action):
+    # ---------
+    # 0 gather  2 attack
+    # 1 sread   3  run
+    # ---------
+  max_length = 4    #as the four_udlr
+  pos_friend=np.array(unit_postion(obs, 1))
+  pos_enemy = np.array(unit_postion(obs, 0))
+  [player_y, player_x] = [pos_friend[:, 0],pos_friend[:,1]]
+  [enemy_y, enemy_x] = [pos_enemy[:, 0],pos_enemy[:,1]]
+  closest, min_dist = None, None
 
+  #to calculate the min dist enemy
   if (len(player) == 2):
-      if (action == 0):  # UP
-          coord = [player[0], player[1] - 4]
-          coord = check_coord(coord)
-          new_action = [
-              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-          ]
+    for p in zip(enemy_x, enemy_y):
+      dist = np.linalg.norm(np.array(player) - np.array(p))
+      if not min_dist or dist < min_dist:
+        closest, min_dist = p, dist
 
-      elif (action == 1):  # DOWN
-          coord = [player[0], player[1] + 4]
-          coord = check_coord(coord)
-          new_action = [
-              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-          ]
+  # to calculate the mean enemy point
+  mean_friend = np.mean([player_x,  player_y],  1)
+  mean_enemy  = np.mean([enemy_x,   enemy_y],   1)
 
-      elif (action == 3):  # LEFT
-          coord = [player[0] - 4, player[1]]
-          coord = check_coord(coord)
-          new_action = [
-              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-          ]
+  if (min_dist == None):
+    new_action = [sc2_actions.FunctionCall(_NO_OP, [])] #it means no enemy
 
-      elif (action == 2):  # RIGHT
-          coord = [player[0] + 4, player[1]]
-          coord = check_coord(coord)
-          new_action = [
-              sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
-          ]
-      else:
-          new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+  elif (action == 0 or action==1 or action==3):
+    # gather towards our friend player
+    if action == 0:
+        diff_pos = np.array(mean_friend) - np.array(player)
+    elif action == 1:
+        diff_pos = np.array(player) - np.array(mean_friend)
+    else:
+        diff_pos = np.array(player) - np.array(mean_enemy)
+
+    norm = np.linalg.norm(diff_pos)
+    #calculate the unit pos
+    if (norm > max_length):
+        diff_pos = diff_pos / norm
+        coord = np.array(player) + diff_pos * max_length
+    else:
+        coord = np.array(player) + diff_pos
+
+    coord = check_coord(coord)
+    new_action = [
+        sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+    ]
+
+  elif (action == 2):  #Attack
+    # nearest enemy
+    diff = np.array(closest) - np.array(player)
+    norm = np.linalg.norm(diff)
+
+    if (norm > max_length):
+        diff = diff / norm
+        coord = np.array(player) + diff * max_length
+        coord = check_coord(coord)
+        new_action = [
+            sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
+        ]
+    else:
+        coord = np.array(player) + diff
+        coord = check_coord(coord)
+        new_action = [
+            sc2_actions.FunctionCall(_ATTACK_SCREEN, [[_NOT_QUEUED], coord])
+        ]
   else:
-      new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+      new_action = [sc2_actions.FunctionCall(_NO_OP, [])]  # it means no enemy
 
   return obs, new_action
 
 
 def unit_postion(obs, flag):
+    # by the screen's density map and pix number
+    # to cal the army(enemy)'s position
+    #input  1 army      0 enemy
+    # output : list=[y, x]
+
   list_unit = []
   screen_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
   screen_density_unit = obs[0].observation["screen"][_DENSITY_UNIT]
@@ -243,9 +260,12 @@ def unit_postion(obs, flag):
   unit_y = unit_y.tolist()
   unit_x = unit_x.tolist()
   while(len(unit_y) > 0):
-    pos = [unit_y[0], unit_x[0]]
+    try:
+        pos = [unit_y[0], unit_x[0]]
+    except Exception:
+        print("the unit is {} {}".format(unit_y,unit_x))
     _record = np.array([ [pos[0], pos[1]], [pos[0], pos[1]+1],
-                    [pos[0]+1, pos[1]], [pos[0]+1, pos[1]+1] ])
+                        [pos[0]+1, pos[1]], [pos[0]+1, pos[1]+1] ])
 
     #make sure there are three pix is the same type
     cnt = 0

@@ -298,9 +298,9 @@ act: ActWrapper
       if Action_Choose==True:
         #the first action
         obs, screen, player = common.select_marine(env, obs)
+
       else:
-        #the second action
-        screen = obs[0].observation["screen"][_UNIT_TYPE]
+        # the second action
         action = act(
           np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
         new_action = None
@@ -309,9 +309,7 @@ act: ActWrapper
         army_count = env._obs[0].observation.player_common.army_count
 
         try:
-          if army_count > 0   and   action== 1                    and (_ATTACK_SCREEN in obs[0].observation["available_actions"]):
-            obs = env.step(actions=new_action)
-          elif army_count > 0 and ((action== 0)or (action == 2))  and (_MOVE_SCREEN   in obs[0].observation["available_actions"]):
+          if army_count > 0 and (_MOVE_SCREEN in obs[0].observation["available_actions"]):
             obs = env.step(actions=new_action)
           else:
             new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
@@ -321,24 +319,28 @@ act: ActWrapper
           print(e)
           new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
           obs = env.step(actions=new_action)
-        new_screen = obs[0].observation['screen'][_UNIT_TYPE]
+        # get the new screen in action 2
+        player_y, player_x = np.nonzero(obs[0].observation["screen"][_SELECTED] == 1)
+        new_screen = obs[0].observation["screen"][_UNIT_TYPE]
+        for i in range(len(player_y)):
+          new_screen[player_y[i]][player_x[i]] = 49
 
       rew = obs[0].reward
       done = obs[0].step_type == environment.StepType.LAST
       episode_rewards[-1] += rew
       reward = episode_rewards[-1]
 
-      if Action_Choose==False:  #only store the screen after the action is done
+      if Action_Choose == False:  # only store the screen after the action is done
         replay_buffer.add(screen, action, rew, new_screen, float(done))
+        mirror_new_screen   = common._map_mirror(new_screen)
+        mirror_screen       = common._map_mirror(screen)
+        replay_buffer.add(mirror_screen, action, rew, mirror_new_screen, float(done))
 
       if done:
-        # print("Episode Reward : %s" % episode_rewards[-1])
         obs = env.reset()
-        screen = obs[0].observation["screen"][_UNIT_TYPE]
+        Action_Choose = False
         group_list = common.init(env, obs)
-        # Select all marines first
         episode_rewards.append(0.0)
-        reset = True
 
       if t > learning_starts and t % train_freq == 0:
         # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
