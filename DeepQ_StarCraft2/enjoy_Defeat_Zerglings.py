@@ -51,11 +51,11 @@ Logger.DEFAULT \
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_12.1.pkl",
+flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_79.3.pkl",
                     "the model you has trained.")
 flags.DEFINE_bool("visualize", True, "if you want to see the game")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")
-flags.DEFINE_integer("step_mul", 1, "the time of every step spends")
+flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 
 
@@ -68,7 +68,7 @@ def main():
             game_steps_per_episode=FLAGS.episode_steps * FLAGS.step_mul) as env:
 
         model = deepq.models.cnn_to_mlp(
-            convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
+            convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],
             hiddens=[256],
             dueling=True
         )
