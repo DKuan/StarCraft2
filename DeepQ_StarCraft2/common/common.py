@@ -259,7 +259,7 @@ def unit_postion(obs, flag):
   unit_y, unit_x = (player_y,player_x) if flag == 1 else (enemy_y,enemy_x)  #which unit to get
   unit_y = unit_y.tolist()
   unit_x = unit_x.tolist()
-  while(len(unit_y) > 0):
+  while(len(unit_y) > 0 ) and (len(unit_x) > 0):
     try:
         pos = [unit_y[0], unit_x[0]]
     except Exception:
