@@ -1,0 +1,1513 @@
+/home/cz/anaconda3/bin/python /home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/enjoy_Defeat_Zerglings.py
+Version: B55958 (SC2.3.16)
+Build: Jul 31 2017 13:19:41
+Command Line: '"/home/cz/StarCraftII/Versions/Base55958/SC2_x64" -listen 127.0.0.1 -port 17347 -dataDir /home/cz/StarCraftII/ -tempDir /tmp/sc-pdvu46lr/ -displayMode 0'
+Starting up...
+Startup Phase 1 complete
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:17347 (17347)
+Startup Phase 3 complete. Ready for commands.
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface enabled
+Configure: score interface enabled
+Configure: render interface disabled
+Entering load game phase.
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Sending ResponseJoinGame
+2018-04-12 13:24:09.866277: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2018-04-12 13:24:09.963472: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:892] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-04-12 13:24:09.963707: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Found device 0 with properties: 
+name: GeForce GTX 1080 major: 6 minor: 1 memoryClockRate(GHz): 1.835
+pciBusID: 0000:01:00.0
+totalMemory: 7.92GiB freeMemory: 7.29GiB
+2018-04-12 13:24:09.963717: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1080, pci bus id: 0000:01:00.0, compute capability: 6.1)
+now the episode is 1
+the mean 100ep_reward is 0.0
+the army count is 2
+Game has started.
+now the episode is 2
+the mean 100ep_reward is 33.5
+Game has started.
+now the episode is 3
+the mean 100ep_reward is 43.0
+Game has started.
+now the episode is 4
+the mean 100ep_reward is 47.8
+Game has started.
+now the episode is 5
+the mean 100ep_reward is 52.6
+the army count is 1
+Game has started.
+now the episode is 6
+the mean 100ep_reward is 54.3
+Game has started.
+now the episode is 7
+the mean 100ep_reward is 56.0
+Game has started.
+now the episode is 8
+the mean 100ep_reward is 63.1
+Game has started.
+now the episode is 9
+the mean 100ep_reward is 64.7
+the army count is 1
+Game has started.
+now the episode is 10
+the mean 100ep_reward is 67.0
+Game has started.
+now the episode is 11
+the mean 100ep_reward is 67.5
+Game has started.
+now the episode is 12
+the mean 100ep_reward is 71.2
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 13
+the mean 100ep_reward is 75.2
+Game has started.
+now the episode is 14
+the mean 100ep_reward is 77.2
+Game has started.
+now the episode is 15
+the mean 100ep_reward is 79.3
+Game has started.
+now the episode is 16
+the mean 100ep_reward is 78.8
+Game has started.
+now the episode is 17
+the mean 100ep_reward is 81.7
+Game has started.
+now the episode is 18
+the mean 100ep_reward is 81.2
+Game has started.
+now the episode is 19
+the mean 100ep_reward is 82.6
+Game has started.
+now the episode is 20
+the mean 100ep_reward is 81.6
+the army count is 1
+Game has started.
+now the episode is 21
+the mean 100ep_reward is 82.1
+Game has started.
+now the episode is 22
+the mean 100ep_reward is 81.7
+Game has started.
+now the episode is 23
+the mean 100ep_reward is 81.5
+Game has started.
+now the episode is 24
+the mean 100ep_reward is 84.3
+the army count is 1
+Game has started.
+now the episode is 25
+the mean 100ep_reward is 82.8
+Game has started.
+now the episode is 26
+the mean 100ep_reward is 81.8
+Game has started.
+now the episode is 27
+the mean 100ep_reward is 81.3
+Game has started.
+now the episode is 28
+the mean 100ep_reward is 80.3
+Game has started.
+now the episode is 29
+the mean 100ep_reward is 82.8
+Game has started.
+now the episode is 30
+the mean 100ep_reward is 82.3
+Game has started.
+now the episode is 31
+the mean 100ep_reward is 82.3
+Game has started.
+now the episode is 32
+the mean 100ep_reward is 86.1
+the army count is 1
+Game has started.
+now the episode is 33
+the mean 100ep_reward is 84.8
+Game has started.
+now the episode is 34
+the mean 100ep_reward is 84.3
+Game has started.
+now the episode is 35
+the mean 100ep_reward is 82.9
+Game has started.
+now the episode is 36
+the mean 100ep_reward is 83.8
+Game has started.
+now the episode is 37
+the mean 100ep_reward is 84.6
+Game has started.
+now the episode is 38
+the mean 100ep_reward is 84.2
+Game has started.
+now the episode is 39
+the mean 100ep_reward is 83.9
+Game has started.
+now the episode is 40
+the mean 100ep_reward is 83.8
+Game has started.
+now the episode is 41
+the mean 100ep_reward is 86.6
+Game has started.
+now the episode is 42
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 43
+the mean 100ep_reward is 86.7
+Game has started.
+now the episode is 44
+the mean 100ep_reward is 87.2
+Game has started.
+now the episode is 45
+the mean 100ep_reward is 85.8
+Game has started.
+now the episode is 46
+the mean 100ep_reward is 85.2
+Game has started.
+now the episode is 47
+the mean 100ep_reward is 84.8
+Game has started.
+now the episode is 48
+the mean 100ep_reward is 87.4
+Game has started.
+now the episode is 49
+the mean 100ep_reward is 87.0
+Game has started.
+now the episode is 50
+the mean 100ep_reward is 89.0
+Game has started.
+now the episode is 51
+the mean 100ep_reward is 89.6
+Game has started.
+now the episode is 52
+the mean 100ep_reward is 88.4
+Game has started.
+now the episode is 53
+the mean 100ep_reward is 88.0
+Game has started.
+now the episode is 54
+the mean 100ep_reward is 86.7
+Game has started.
+now the episode is 55
+the mean 100ep_reward is 86.0
+Game has started.
+now the episode is 56
+the mean 100ep_reward is 85.8
+Game has started.
+now the episode is 57
+the mean 100ep_reward is 86.3
+Game has started.
+now the episode is 58
+the mean 100ep_reward is 86.0
+Game has started.
+now the episode is 59
+the mean 100ep_reward is 86.4
+Game has started.
+now the episode is 60
+the mean 100ep_reward is 86.1
+Game has started.
+now the episode is 61
+the mean 100ep_reward is 86.4
+Game has started.
+now the episode is 62
+the mean 100ep_reward is 86.0
+the army count is 1
+Game has started.
+now the episode is 63
+the mean 100ep_reward is 87.3
+Game has started.
+now the episode is 64
+the mean 100ep_reward is 87.8
+Game has started.
+now the episode is 65
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 66
+the mean 100ep_reward is 87.2
+Game has started.
+now the episode is 67
+the mean 100ep_reward is 86.8
+Game has started.
+now the episode is 68
+the mean 100ep_reward is 87.2
+Game has started.
+now the episode is 69
+the mean 100ep_reward is 87.6
+Game has started.
+now the episode is 70
+the mean 100ep_reward is 88.6
+Game has started.
+now the episode is 71
+the mean 100ep_reward is 88.2
+Game has started.
+now the episode is 72
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 73
+the mean 100ep_reward is 87.3
+Game has started.
+now the episode is 74
+the mean 100ep_reward is 87.1
+Game has started.
+now the episode is 75
+the mean 100ep_reward is 86.9
+Game has started.
+now the episode is 76
+the mean 100ep_reward is 86.7
+Game has started.
+now the episode is 77
+the mean 100ep_reward is 86.6
+Game has started.
+now the episode is 78
+the mean 100ep_reward is 86.2
+Game has started.
+now the episode is 79
+the mean 100ep_reward is 86.2
+Game has started.
+now the episode is 80
+the mean 100ep_reward is 85.8
+Game has started.
+now the episode is 81
+the mean 100ep_reward is 86.5
+Game has started.
+now the episode is 82
+the mean 100ep_reward is 86.9
+Game has started.
+now the episode is 83
+the mean 100ep_reward is 86.7
+Game has started.
+now the episode is 84
+the mean 100ep_reward is 87.0
+Game has started.
+now the episode is 85
+the mean 100ep_reward is 87.3
+Game has started.
+now the episode is 86
+the mean 100ep_reward is 87.2
+Game has started.
+now the episode is 87
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 88
+the mean 100ep_reward is 87.4
+Game has started.
+now the episode is 89
+the mean 100ep_reward is 87.1
+Game has started.
+now the episode is 90
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 91
+the mean 100ep_reward is 87.3
+Game has started.
+now the episode is 92
+the mean 100ep_reward is 87.5
+Game has started.
+now the episode is 93
+the mean 100ep_reward is 87.3
+the army count is 1
+Game has started.
+now the episode is 94
+the mean 100ep_reward is 86.9
+Game has started.
+now the episode is 95
+the mean 100ep_reward is 87.1
+Game has started.
+now the episode is 96
+the mean 100ep_reward is 87.4
+Game has started.
+now the episode is 97
+the mean 100ep_reward is 87.4
+Game has started.
+now the episode is 98
+the mean 100ep_reward is 87.8
+the army count is 1
+Game has started.
+now the episode is 99
+the mean 100ep_reward is 88.0
+Game has started.
+now the episode is 100
+the mean 100ep_reward is 88.3
+Game has started.
+now the episode is 101
+the mean 100ep_reward is 89.0
+Game has started.
+now the episode is 102
+the mean 100ep_reward is 89.7
+Game has started.
+now the episode is 103
+the mean 100ep_reward is 90.5
+Game has started.
+now the episode is 104
+the mean 100ep_reward is 90.6
+Game has started.
+now the episode is 105
+the mean 100ep_reward is 90.6
+Game has started.
+now the episode is 106
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 107
+the mean 100ep_reward is 91.0
+Game has started.
+now the episode is 108
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 109
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 110
+the mean 100ep_reward is 91.4
+Game has started.
+now the episode is 111
+the mean 100ep_reward is 91.3
+Game has started.
+now the episode is 112
+the mean 100ep_reward is 90.9
+Game has started.
+now the episode is 113
+the mean 100ep_reward is 90.5
+Game has started.
+now the episode is 114
+the mean 100ep_reward is 91.0
+Game has started.
+now the episode is 115
+the mean 100ep_reward is 90.6
+Game has started.
+now the episode is 116
+the mean 100ep_reward is 90.7
+Game has started.
+now the episode is 117
+the mean 100ep_reward is 90.1
+Game has started.
+now the episode is 118
+the mean 100ep_reward is 90.0
+Game has started.
+now the episode is 119
+the mean 100ep_reward is 89.7
+Game has started.
+now the episode is 120
+the mean 100ep_reward is 89.7
+Game has started.
+now the episode is 121
+the mean 100ep_reward is 89.9
+Game has started.
+now the episode is 122
+the mean 100ep_reward is 89.9
+Game has started.
+now the episode is 123
+the mean 100ep_reward is 89.7
+Game has started.
+now the episode is 124
+the mean 100ep_reward is 89.4
+Game has started.
+now the episode is 125
+the mean 100ep_reward is 89.5
+Game has started.
+now the episode is 126
+the mean 100ep_reward is 90.1
+Game has started.
+now the episode is 127
+the mean 100ep_reward is 90.5
+Game has started.
+now the episode is 128
+the mean 100ep_reward is 91.2
+Game has started.
+now the episode is 129
+the mean 100ep_reward is 90.1
+[FunctionCall(function=12, arguments=[[0], (15, 22)])]
+Function 12/Attack_screen is currently not available
+Game has started.
+now the episode is 130
+the mean 100ep_reward is 90.2
+Game has started.
+now the episode is 131
+the mean 100ep_reward is 91.9
+Game has started.
+now the episode is 132
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 133
+the mean 100ep_reward is 92.2
+Game has started.
+now the episode is 134
+the mean 100ep_reward is 92.3
+Game has started.
+now the episode is 135
+the mean 100ep_reward is 92.6
+Game has started.
+now the episode is 136
+the mean 100ep_reward is 92.2
+Game has started.
+now the episode is 137
+the mean 100ep_reward is 92.7
+Game has started.
+now the episode is 138
+the mean 100ep_reward is 93.1
+Game has started.
+now the episode is 139
+the mean 100ep_reward is 93.4
+Game has started.
+now the episode is 140
+the mean 100ep_reward is 93.8
+Game has started.
+now the episode is 141
+the mean 100ep_reward is 93.0
+Game has started.
+now the episode is 142
+the mean 100ep_reward is 92.4
+Game has started.
+now the episode is 143
+the mean 100ep_reward is 92.5
+Game has started.
+now the episode is 144
+the mean 100ep_reward is 92.0
+Game has started.
+now the episode is 145
+the mean 100ep_reward is 92.5
+Game has started.
+now the episode is 146
+the mean 100ep_reward is 93.4
+Game has started.
+now the episode is 147
+the mean 100ep_reward is 93.0
+Game has started.
+now the episode is 148
+the mean 100ep_reward is 91.6
+Game has started.
+now the episode is 149
+the mean 100ep_reward is 92.0
+Game has started.
+now the episode is 150
+the mean 100ep_reward is 90.8
+Game has started.
+now the episode is 151
+the mean 100ep_reward is 90.8
+Game has started.
+now the episode is 152
+the mean 100ep_reward is 91.7
+Game has started.
+now the episode is 153
+the mean 100ep_reward is 91.8
+Game has started.
+now the episode is 154
+the mean 100ep_reward is 92.3
+Game has started.
+now the episode is 155
+the mean 100ep_reward is 93.0
+Game has started.
+now the episode is 156
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 157
+the mean 100ep_reward is 92.4
+Game has started.
+now the episode is 158
+the mean 100ep_reward is 92.4
+Game has started.
+now the episode is 159
+the mean 100ep_reward is 92.1
+Game has started.
+now the episode is 160
+the mean 100ep_reward is 92.1
+Game has started.
+now the episode is 161
+the mean 100ep_reward is 91.7
+Game has started.
+now the episode is 162
+the mean 100ep_reward is 91.4
+Game has started.
+now the episode is 163
+the mean 100ep_reward is 91.0
+Game has started.
+now the episode is 164
+the mean 100ep_reward is 90.8
+Game has started.
+now the episode is 165
+the mean 100ep_reward is 90.8
+the army count is 1
+Game has started.
+now the episode is 166
+the mean 100ep_reward is 91.3
+Game has started.
+now the episode is 167
+the mean 100ep_reward is 91.8
+Game has started.
+now the episode is 168
+the mean 100ep_reward is 91.9
+Game has started.
+now the episode is 169
+the mean 100ep_reward is 91.8
+Game has started.
+now the episode is 170
+the mean 100ep_reward is 91.5
+Game has started.
+now the episode is 171
+the mean 100ep_reward is 92.4
+Game has started.
+now the episode is 172
+the mean 100ep_reward is 92.6
+Game has started.
+now the episode is 173
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 174
+the mean 100ep_reward is 93.1
+Game has started.
+now the episode is 175
+the mean 100ep_reward is 93.0
+Game has started.
+now the episode is 176
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 177
+the mean 100ep_reward is 92.8
+Game has started.
+now the episode is 178
+the mean 100ep_reward is 93.4
+Game has started.
+now the episode is 179
+the mean 100ep_reward is 93.7
+Game has started.
+now the episode is 180
+the mean 100ep_reward is 93.8
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 181
+the mean 100ep_reward is 93.8
+Game has started.
+now the episode is 182
+the mean 100ep_reward is 93.8
+Game has started.
+now the episode is 183
+the mean 100ep_reward is 94.6
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 184
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 185
+the mean 100ep_reward is 94.8
+Game has started.
+now the episode is 186
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 187
+the mean 100ep_reward is 94.5
+the army count is 1
+Game has started.
+now the episode is 188
+the mean 100ep_reward is 95.2
+Game has started.
+now the episode is 189
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 190
+the mean 100ep_reward is 95.9
+Game has started.
+now the episode is 191
+the mean 100ep_reward is 95.9
+Game has started.
+now the episode is 192
+the mean 100ep_reward is 95.5
+the army count is 1
+the army count is 1
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 193
+the mean 100ep_reward is 96.0
+Game has started.
+now the episode is 194
+the mean 100ep_reward is 96.3
+Game has started.
+now the episode is 195
+the mean 100ep_reward is 95.9
+Game has started.
+now the episode is 196
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 197
+the mean 100ep_reward is 95.9
+Game has started.
+now the episode is 198
+the mean 100ep_reward is 95.7
+Game has started.
+now the episode is 199
+the mean 100ep_reward is 95.3
+Game has started.
+now the episode is 200
+the mean 100ep_reward is 95.7
+Game has started.
+now the episode is 201
+the mean 100ep_reward is 95.3
+Game has started.
+now the episode is 202
+the mean 100ep_reward is 94.1
+Game has started.
+now the episode is 203
+the mean 100ep_reward is 95.4
+Game has started.
+now the episode is 204
+the mean 100ep_reward is 96.3
+Game has started.
+now the episode is 205
+the mean 100ep_reward is 97.2
+the army count is 1
+Game has started.
+now the episode is 206
+the mean 100ep_reward is 97.0
+Game has started.
+now the episode is 207
+the mean 100ep_reward is 97.0
+Game has started.
+now the episode is 208
+the mean 100ep_reward is 96.5
+Game has started.
+now the episode is 209
+the mean 100ep_reward is 97.0
+the army count is 1
+Game has started.
+now the episode is 210
+the mean 100ep_reward is 96.3
+the army count is 1
+the army count is 1
+Game has started.
+now the episode is 211
+the mean 100ep_reward is 96.2
+Game has started.
+now the episode is 212
+the mean 100ep_reward is 96.0
+Game has started.
+now the episode is 213
+the mean 100ep_reward is 95.9
+Game has started.
+now the episode is 214
+the mean 100ep_reward is 95.4
+the army count is 1
+Game has started.
+now the episode is 215
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 216
+the mean 100ep_reward is 95.7
+Game has started.
+now the episode is 217
+the mean 100ep_reward is 95.5
+Game has started.
+now the episode is 218
+the mean 100ep_reward is 95.6
+Game has started.
+now the episode is 219
+the mean 100ep_reward is 95.5
+Game has started.
+now the episode is 220
+the mean 100ep_reward is 95.4
+the army count is 2
+Game has started.
+now the episode is 221
+the mean 100ep_reward is 95.4
+Game has started.
+now the episode is 222
+the mean 100ep_reward is 95.4
+Game has started.
+now the episode is 223
+the mean 100ep_reward is 95.4
+Game has started.
+now the episode is 224
+the mean 100ep_reward is 95.6
+Game has started.
+now the episode is 225
+the mean 100ep_reward is 96.1
+Game has started.
+now the episode is 226
+the mean 100ep_reward is 96.0
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 227
+the mean 100ep_reward is 96.2
+Game has started.
+now the episode is 228
+the mean 100ep_reward is 96.1
+Game has started.
+now the episode is 229
+the mean 100ep_reward is 96.4
+Game has started.
+now the episode is 230
+the mean 100ep_reward is 96.7
+the army count is 1
+Game has started.
+now the episode is 231
+the mean 100ep_reward is 94.5
+Game has started.
+now the episode is 232
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 233
+the mean 100ep_reward is 94.1
+Game has started.
+now the episode is 234
+the mean 100ep_reward is 94.8
+Game has started.
+now the episode is 235
+the mean 100ep_reward is 94.8
+Game has started.
+now the episode is 236
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 237
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 238
+the mean 100ep_reward is 93.6
+Game has started.
+now the episode is 239
+the mean 100ep_reward is 93.6
+Game has started.
+now the episode is 240
+the mean 100ep_reward is 93.5
+[FunctionCall(function=12, arguments=[[0], (10, 21)])]
+Function 12/Attack_screen is currently not available
+the army count is 2
+Game has started.
+now the episode is 241
+the mean 100ep_reward is 93.1
+Game has started.
+now the episode is 242
+the mean 100ep_reward is 93.6
+Game has started.
+now the episode is 243
+the mean 100ep_reward is 94.0
+Game has started.
+now the episode is 244
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 245
+the mean 100ep_reward is 95.6
+Game has started.
+now the episode is 246
+the mean 100ep_reward is 95.2
+Game has started.
+now the episode is 247
+the mean 100ep_reward is 96.1
+Game has started.
+now the episode is 248
+the mean 100ep_reward is 97.0
+Game has started.
+now the episode is 249
+the mean 100ep_reward is 97.2
+Game has started.
+now the episode is 250
+the mean 100ep_reward is 97.1
+the army count is 1
+Game has started.
+now the episode is 251
+the mean 100ep_reward is 96.5
+Game has started.
+now the episode is 252
+the mean 100ep_reward is 96.8
+Game has started.
+now the episode is 253
+the mean 100ep_reward is 97.3
+Game has started.
+now the episode is 254
+the mean 100ep_reward is 98.3
+Game has started.
+now the episode is 255
+the mean 100ep_reward is 99.2
+Game has started.
+now the episode is 256
+the mean 100ep_reward is 99.1
+Game has started.
+now the episode is 257
+the mean 100ep_reward is 99.2
+Game has started.
+now the episode is 258
+the mean 100ep_reward is 100.1
+Game has started.
+now the episode is 259
+the mean 100ep_reward is 100.4
+Game has started.
+now the episode is 260
+the mean 100ep_reward is 100.4
+the army count is 1
+Game has started.
+now the episode is 261
+the mean 100ep_reward is 100.3
+Game has started.
+now the episode is 262
+the mean 100ep_reward is 100.7
+the army count is 1
+the army count is 1
+Game has started.
+now the episode is 263
+the mean 100ep_reward is 101.4
+Game has started.
+now the episode is 264
+the mean 100ep_reward is 101.0
+Game has started.
+now the episode is 265
+the mean 100ep_reward is 101.0
+Game has started.
+now the episode is 266
+the mean 100ep_reward is 100.9
+Game has started.
+now the episode is 267
+the mean 100ep_reward is 100.9
+Game has started.
+now the episode is 268
+the mean 100ep_reward is 100.3
+Game has started.
+now the episode is 269
+the mean 100ep_reward is 100.4
+Game has started.
+now the episode is 270
+the mean 100ep_reward is 100.3
+Game has started.
+now the episode is 271
+the mean 100ep_reward is 100.7
+Game has started.
+now the episode is 272
+the mean 100ep_reward is 102.0
+Game has started.
+now the episode is 273
+the mean 100ep_reward is 102.6
+Game has started.
+now the episode is 274
+the mean 100ep_reward is 102.4
+Game has started.
+now the episode is 275
+the mean 100ep_reward is 101.8
+[FunctionCall(function=12, arguments=[[0], (15, 32)])]
+Function 12/Attack_screen is currently not available
+Game has started.
+now the episode is 276
+the mean 100ep_reward is 102.8
+Game has started.
+now the episode is 277
+the mean 100ep_reward is 102.9
+Game has started.
+now the episode is 278
+the mean 100ep_reward is 102.4
+Game has started.
+now the episode is 279
+the mean 100ep_reward is 102.8
+Game has started.
+now the episode is 280
+the mean 100ep_reward is 102.9
+Game has started.
+now the episode is 281
+the mean 100ep_reward is 102.2
+Game has started.
+now the episode is 282
+the mean 100ep_reward is 101.7
+the army count is 1
+Game has started.
+now the episode is 283
+the mean 100ep_reward is 101.2
+the army count is 1
+Game has started.
+now the episode is 284
+the mean 100ep_reward is 100.3
+Game has started.
+now the episode is 285
+the mean 100ep_reward is 100.8
+Game has started.
+now the episode is 286
+the mean 100ep_reward is 101.4
+Game has started.
+now the episode is 287
+the mean 100ep_reward is 101.0
+Game has started.
+now the episode is 288
+the mean 100ep_reward is 100.8
+Game has started.
+now the episode is 289
+the mean 100ep_reward is 100.3
+the army count is 1
+Game has started.
+now the episode is 290
+the mean 100ep_reward is 99.9
+Game has started.
+now the episode is 291
+the mean 100ep_reward is 99.9
+Game has started.
+now the episode is 292
+the mean 100ep_reward is 99.8
+the army count is 1
+Game has started.
+now the episode is 293
+the mean 100ep_reward is 99.4
+Game has started.
+now the episode is 294
+the mean 100ep_reward is 100.4
+Game has started.
+now the episode is 295
+the mean 100ep_reward is 100.4
+Game has started.
+now the episode is 296
+the mean 100ep_reward is 100.0
+Max game loops reached. Current: 263226 Max: 262144
+Performing a full restart of the game.
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+now the episode is 297
+the mean 100ep_reward is 100.6
+Game has started.
+now the episode is 298
+the mean 100ep_reward is 99.7
+Game has started.
+now the episode is 299
+the mean 100ep_reward is 100.2
+Game has started.
+now the episode is 300
+the mean 100ep_reward is 99.3
+Game has started.
+now the episode is 301
+the mean 100ep_reward is 98.9
+Game has started.
+now the episode is 302
+the mean 100ep_reward is 99.1
+the army count is 1
+Game has started.
+now the episode is 303
+the mean 100ep_reward is 98.0
+Game has started.
+now the episode is 304
+the mean 100ep_reward is 96.7
+Game has started.
+now the episode is 305
+the mean 100ep_reward is 96.7
+the army count is 1
+Game has started.
+now the episode is 306
+the mean 100ep_reward is 96.6
+Game has started.
+now the episode is 307
+the mean 100ep_reward is 97.4
+[FunctionCall(function=12, arguments=[[0], (51, 25)])]
+Function 12/Attack_screen is currently not available
+Game has started.
+now the episode is 308
+the mean 100ep_reward is 97.8
+Game has started.
+now the episode is 309
+the mean 100ep_reward is 97.4
+Game has started.
+now the episode is 310
+the mean 100ep_reward is 97.5
+Game has started.
+now the episode is 311
+the mean 100ep_reward is 97.6
+Game has started.
+now the episode is 312
+the mean 100ep_reward is 98.2
+Game has started.
+now the episode is 313
+the mean 100ep_reward is 98.7
+Game has started.
+now the episode is 314
+the mean 100ep_reward is 98.8
+Game has started.
+now the episode is 315
+the mean 100ep_reward is 98.4
+Game has started.
+now the episode is 316
+the mean 100ep_reward is 98.5
+Game has started.
+now the episode is 317
+the mean 100ep_reward is 98.6
+Game has started.
+now the episode is 318
+the mean 100ep_reward is 98.7
+Game has started.
+now the episode is 319
+the mean 100ep_reward is 98.8
+Game has started.
+now the episode is 320
+the mean 100ep_reward is 98.8
+Game has started.
+now the episode is 321
+the mean 100ep_reward is 98.6
+Game has started.
+now the episode is 322
+the mean 100ep_reward is 99.0
+Game has started.
+now the episode is 323
+the mean 100ep_reward is 99.1
+Game has started.
+now the episode is 324
+the mean 100ep_reward is 99.0
+Game has started.
+now the episode is 325
+the mean 100ep_reward is 98.6
+Game has started.
+now the episode is 326
+the mean 100ep_reward is 98.0
+Game has started.
+now the episode is 327
+the mean 100ep_reward is 97.5
+Game has started.
+now the episode is 328
+the mean 100ep_reward is 97.2
+Game has started.
+now the episode is 329
+the mean 100ep_reward is 97.7
+Game has started.
+now the episode is 330
+the mean 100ep_reward is 97.8
+Game has started.
+now the episode is 331
+the mean 100ep_reward is 98.1
+Game has started.
+now the episode is 332
+the mean 100ep_reward is 97.8
+Game has started.
+now the episode is 333
+the mean 100ep_reward is 97.9
+Game has started.
+now the episode is 334
+the mean 100ep_reward is 97.5
+Game has started.
+now the episode is 335
+the mean 100ep_reward is 97.5
+Game has started.
+now the episode is 336
+the mean 100ep_reward is 97.2
+Game has started.
+now the episode is 337
+the mean 100ep_reward is 96.6
+Game has started.
+now the episode is 338
+the mean 100ep_reward is 97.6
+Game has started.
+now the episode is 339
+the mean 100ep_reward is 97.6
+Game has started.
+now the episode is 340
+the mean 100ep_reward is 97.3
+Game has started.
+now the episode is 341
+the mean 100ep_reward is 97.2
+Game has started.
+now the episode is 342
+the mean 100ep_reward is 97.8
+Game has started.
+now the episode is 343
+the mean 100ep_reward is 97.3
+Game has started.
+now the episode is 344
+the mean 100ep_reward is 96.8
+the army count is 1
+Game has started.
+now the episode is 345
+the mean 100ep_reward is 96.0
+Game has started.
+now the episode is 346
+the mean 100ep_reward is 95.7
+the army count is 1
+Game has started.
+now the episode is 347
+the mean 100ep_reward is 95.0
+Game has started.
+now the episode is 348
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 349
+the mean 100ep_reward is 94.0
+Game has started.
+now the episode is 350
+the mean 100ep_reward is 94.4
+the army count is 1
+Game has started.
+now the episode is 351
+the mean 100ep_reward is 94.5
+Game has started.
+now the episode is 352
+the mean 100ep_reward is 93.6
+Game has started.
+now the episode is 353
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 354
+the mean 100ep_reward is 92.0
+Game has started.
+now the episode is 355
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 356
+the mean 100ep_reward is 91.6
+Game has started.
+now the episode is 357
+the mean 100ep_reward is 91.5
+Game has started.
+now the episode is 358
+the mean 100ep_reward is 91.0
+Game has started.
+now the episode is 359
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 360
+the mean 100ep_reward is 91.1
+the army count is 1
+Game has started.
+now the episode is 361
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 362
+the mean 100ep_reward is 91.1
+Game has started.
+now the episode is 363
+the mean 100ep_reward is 90.0
+Game has started.
+now the episode is 364
+the mean 100ep_reward is 90.0
+Game has started.
+now the episode is 365
+the mean 100ep_reward is 90.3
+Game has started.
+now the episode is 366
+the mean 100ep_reward is 90.4
+Game has started.
+now the episode is 367
+the mean 100ep_reward is 90.8
+the army count is 1
+Game has started.
+now the episode is 368
+the mean 100ep_reward is 91.0
+the army count is 1
+Game has started.
+now the episode is 369
+the mean 100ep_reward is 90.2
+Game has started.
+now the episode is 370
+the mean 100ep_reward is 89.9
+Game has started.
+now the episode is 371
+the mean 100ep_reward is 89.0
+Game has started.
+now the episode is 372
+the mean 100ep_reward is 88.3
+Game has started.
+now the episode is 373
+the mean 100ep_reward is 87.3
+the army count is 1
+Game has started.
+now the episode is 374
+the mean 100ep_reward is 87.1
+Game has started.
+now the episode is 375
+the mean 100ep_reward is 88.7
+Game has started.
+now the episode is 376
+the mean 100ep_reward is 88.6
+Game has started.
+now the episode is 377
+the mean 100ep_reward is 88.4
+Game has started.
+now the episode is 378
+the mean 100ep_reward is 89.3
+Game has started.
+now the episode is 379
+the mean 100ep_reward is 88.4
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 380
+the mean 100ep_reward is 89.4
+Game has started.
+now the episode is 381
+the mean 100ep_reward is 89.2
+the army count is 1
+Game has started.
+now the episode is 382
+the mean 100ep_reward is 89.9
+Game has started.
+now the episode is 383
+the mean 100ep_reward is 89.6
+Game has started.
+now the episode is 384
+the mean 100ep_reward is 89.5
+Game has started.
+now the episode is 385
+the mean 100ep_reward is 88.9
+Game has started.
+now the episode is 386
+the mean 100ep_reward is 88.8
+Game has started.
+now the episode is 387
+the mean 100ep_reward is 89.6
+Game has started.
+now the episode is 388
+the mean 100ep_reward is 89.4
+the army count is 1
+Game has started.
+now the episode is 389
+the mean 100ep_reward is 89.8
+Game has started.
+now the episode is 390
+the mean 100ep_reward is 89.4
+Game has started.
+now the episode is 391
+the mean 100ep_reward is 90.4
+Game has started.
+now the episode is 392
+the mean 100ep_reward is 90.5
+Game has started.
+now the episode is 393
+the mean 100ep_reward is 90.9
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 394
+the mean 100ep_reward is 90.0
+Game has started.
+now the episode is 395
+the mean 100ep_reward is 90.1
+Game has started.
+now the episode is 396
+the mean 100ep_reward is 90.1
+Game has started.
+now the episode is 397
+the mean 100ep_reward is 90.4
+Game has started.
+now the episode is 398
+the mean 100ep_reward is 91.4
+Game has started.
+now the episode is 399
+the mean 100ep_reward is 91.0
+Game has started.
+now the episode is 400
+the mean 100ep_reward is 91.3
+Game has started.
+now the episode is 401
+the mean 100ep_reward is 91.3
+Game has started.
+now the episode is 402
+the mean 100ep_reward is 91.3
+Game has started.
+now the episode is 403
+the mean 100ep_reward is 92.6
+Game has started.
+now the episode is 404
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 405
+the mean 100ep_reward is 92.8
+Game has started.
+now the episode is 406
+the mean 100ep_reward is 93.2
+the army count is 1
+Game has started.
+now the episode is 407
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 408
+the mean 100ep_reward is 92.5
+Game has started.
+now the episode is 409
+the mean 100ep_reward is 92.8
+Game has started.
+now the episode is 410
+the mean 100ep_reward is 92.7
+Game has started.
+now the episode is 411
+the mean 100ep_reward is 92.9
+Game has started.
+now the episode is 412
+the mean 100ep_reward is 93.3
+Game has started.
+now the episode is 413
+the mean 100ep_reward is 93.2
+Game has started.
+now the episode is 414
+the mean 100ep_reward is 93.2
+Game has started.
+now the episode is 415
+the mean 100ep_reward is 93.7
+Game has started.
+now the episode is 416
+the mean 100ep_reward is 93.5
+the army count is 1
+Game has started.
+now the episode is 417
+the mean 100ep_reward is 93.5
+Game has started.
+now the episode is 418
+the mean 100ep_reward is 93.8
+Game has started.
+now the episode is 419
+the mean 100ep_reward is 93.8
+the army count is 1
+Game has started.
+Game has started.
+now the episode is 420
+the mean 100ep_reward is 94.3
+Game has started.
+now the episode is 421
+the mean 100ep_reward is 94.2
+the army count is 1
+Game has started.
+now the episode is 422
+the mean 100ep_reward is 94.3
+Game has started.
+now the episode is 423
+the mean 100ep_reward is 94.2
+Game has started.
+now the episode is 424
+the mean 100ep_reward is 93.7
+Game has started.
+now the episode is 425
+the mean 100ep_reward is 94.1
+Game has started.
+now the episode is 426
+the mean 100ep_reward is 94.2
+Game has started.
+now the episode is 427
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 428
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 429
+the mean 100ep_reward is 94.0
+Game has started.
+now the episode is 430
+the mean 100ep_reward is 93.9
+Game has started.
+now the episode is 431
+the mean 100ep_reward is 94.3
+Game has started.
+now the episode is 432
+the mean 100ep_reward is 94.0
+Game has started.
+now the episode is 433
+the mean 100ep_reward is 94.2
+the army count is 1
+Game has started.
+now the episode is 434
+the mean 100ep_reward is 94.1
+Game has started.
+now the episode is 435
+the mean 100ep_reward is 94.2
+Game has started.
+now the episode is 436
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 437
+the mean 100ep_reward is 94.8
+the army count is 2
+Game has started.
+now the episode is 438
+the mean 100ep_reward is 94.3
+Game has started.
+now the episode is 439
+the mean 100ep_reward is 93.8
+Game has started.
+now the episode is 440
+the mean 100ep_reward is 94.1
+Game has started.
+now the episode is 441
+the mean 100ep_reward is 94.3
+[FunctionCall(function=12, arguments=[[0], (15, 26)])]
+Function 12/Attack_screen is currently not available
+Game has started.
+now the episode is 442
+the mean 100ep_reward is 94.2
+Game has started.
+now the episode is 443
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 444
+the mean 100ep_reward is 94.8
+Game has started.
+now the episode is 445
+the mean 100ep_reward is 95.0
+Game has started.
+now the episode is 446
+the mean 100ep_reward is 95.2
+Game has started.
+now the episode is 447
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 448
+the mean 100ep_reward is 96.2
+Game has started.
+now the episode is 449
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 450
+the mean 100ep_reward is 95.8
+Game has started.
+now the episode is 451
+the mean 100ep_reward is 96.0
+Game has started.
+now the episode is 452
+the mean 100ep_reward is 96.0
+Game has started.
+now the episode is 453
+the mean 100ep_reward is 96.6
+Game has started.
+now the episode is 454
+the mean 100ep_reward is 97.0
+the army count is 1
+Game has started.
+now the episode is 455
+the mean 100ep_reward is 96.2
+Game has started.
+now the episode is 456
+the mean 100ep_reward is 95.1
+Game has started.
+now the episode is 457
+the mean 100ep_reward is 95.2
+Game has started.
+now the episode is 458
+the mean 100ep_reward is 94.7
+Game has started.
+now the episode is 459
+the mean 100ep_reward is 94.7
+Game has started.
+now the episode is 460
+the mean 100ep_reward is 94.6
+Game has started.
+now the episode is 461
+the mean 100ep_reward is 94.7
+the army count is 1
+Game has started.
+now the episode is 462
+the mean 100ep_reward is 95.8
+the army count is 1
+Game has started.
+now the episode is 463
+the mean 100ep_reward is 96.3
+Game has started.
+now the episode is 464
+the mean 100ep_reward is 96.4
+Game has started.
+now the episode is 465
+the mean 100ep_reward is 96.5
+
