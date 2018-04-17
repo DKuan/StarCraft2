@@ -303,6 +303,7 @@ act: ActWrapper
         # the second action
         action = act(
           np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
+        action = common.check_action(obs, action)
         new_action = None
 
         obs, new_action = common.marine_action(env, obs, player, action)
@@ -343,21 +344,21 @@ act: ActWrapper
         episode_rewards.append(0.0)
 
       if t > learning_starts and t % train_freq == 0:
-        # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
-        if prioritized_replay:
-          experience = replay_buffer.sample(
-            batch_size, beta=beta_schedule.value(t))
-          (obses_t, actions, rewards, obses_tp1, dones, weights,
-           batch_idxes) = experience
-        else:
-          obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(
-            batch_size)
-          weights, batch_idxes = np.ones_like(rewards), None
-        td_errors = train(obses_t, actions, rewards, obses_tp1, dones,
+          # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
+          if prioritized_replay:
+              experience = replay_buffer.sample(
+                batch_size, beta=beta_schedule.value(t))
+              (obses_t, actions, rewards, obses_tp1, dones, weights,
+              batch_idxes) = experience
+          else:
+              obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(
+                batch_size)
+              weights, batch_idxes = np.ones_like(rewards), None
+          td_errors = train(obses_t, actions, rewards, obses_tp1, dones,
                           weights)
-        if prioritized_replay:
-          new_priorities = np.abs(td_errors) + prioritized_replay_eps
-          replay_buffer.update_priorities(batch_idxes,
+          if prioritized_replay:
+              new_priorities = np.abs(td_errors) + prioritized_replay_eps
+              replay_buffer.update_priorities(batch_idxes,
                                           new_priorities)
 
       if t > learning_starts and t % target_network_update_freq == 0:

@@ -158,6 +158,30 @@ def map_mirror(screen, action):
     mirror_action = action
     return mirror_screen, mirror_action
 
+def check_action(obs, action):
+    #this function is mean to show the experience of the people
+    #we already know that the army shouldn't be gathered too much
+    #so the distance is too small that we should let them spread
+    distance_all = 0
+    distance_min = 40
+
+    pos_friend = np.array(unit_postion(obs, 1))
+    [player_y, player_x] = [pos_friend[:, 0], pos_friend[:, 1]]
+
+    # to calculate the mean enemy point
+    mean_friend = np.mean([player_x, player_y], 1)
+
+    # to calculate the distance of all army from the center point
+    if (len(player_y) > 0) and (len(player_x) > 0):
+        for army in zip(player_x, player_y):
+            dist = np.linalg.norm(np.array(army) - np.array(mean_friend))
+            distance_all += dist
+
+    if distance_all < distance_min:
+        action = 1
+
+    return action
+
 def check_coord(coord):
     if (coord[0] < 0):
         coord[0] = 0
@@ -174,7 +198,7 @@ def check_coord(coord):
 def marine_action(env, obs, player, action):
     # ---------
     # 0 gather  2 attack
-    # 1 sread   3  run
+    # 1 spread   3  run
     # ---------
   max_length = 4    #as the four_udlr
   pos_friend=np.array(unit_postion(obs, 1))
