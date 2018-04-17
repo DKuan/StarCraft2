@@ -29,16 +29,16 @@ flags.DEFINE_float("exploration_fraction",  0.47, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
 flags.DEFINE_float("lr",  0.001, "Learning rate")
 
-flags.DEFINE_integer("train_freq", 100, "the freq that you train your model")
+flags.DEFINE_integer("train_freq", 1000, "the freq that you train your model")
 flags.DEFINE_integer("batch_size", 1500, "the number of your examples that you want to train your model")
 flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
-flags.DEFINE_integer("learning_starts", 150000, "Learning start time")
+flags.DEFINE_integer("learning_starts", 45000, "Learning start time")
 flags.DEFINE_integer("timesteps", 2500000, "most Steps to train")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
 flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")# 2000
 flags.DEFINE_integer("buffer_size", 45000, "the number of actions that you want to store")
-flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
+flags.DEFINE_integer("target_network_update_freq", 1000, "the freq that your network update")
 
 PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -115,7 +115,7 @@ def deepq_callback(locals, globals):
 
     if ('mean_100ep_reward' in locals
           and locals['num_episodes'] >= 500
-          and ( ((locals['num_episodes']-best_reward_episode)%50 ==0) or (locals['mean_100ep_reward'] > max_mean_reward))
+          and ( ((locals['num_episodes']-best_reward_episode)%100 ==0) or (locals['mean_100ep_reward'] > max_mean_reward))
       ):
       if(not os.path.exists(os.path.join(PROJ_DIR,'models/deepq/'))):
         try:
