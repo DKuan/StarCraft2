@@ -22,14 +22,14 @@ flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
 
 flags.DEFINE_boolean("dueling", True, "dueling")
 flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
-flags.DEFINE_bool("visualize", True, "if you want to see the game")
+flags.DEFINE_bool("visualize", False, "if you want to see the game")
 
 flags.DEFINE_float("exploration_final_eps",  0.01, "your final Exploration Fraction")
 flags.DEFINE_float("exploration_fraction",  0.47, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
 flags.DEFINE_float("lr",  0.001, "Learning rate")
 
-flags.DEFINE_integer("train_freq", 400, "the freq that you train your model")
+flags.DEFINE_integer("train_freq", 100, "the freq that you train your model")
 flags.DEFINE_integer("batch_size", 1500, "the number of your examples that you want to train your model")
 flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
 flags.DEFINE_integer("learning_starts", 45000, "Learning start time")
@@ -38,7 +38,7 @@ flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
 flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")# 2000
 flags.DEFINE_integer("buffer_size", 45000, "the number of actions that you want to store")
-flags.DEFINE_integer("target_network_update_freq", 400, "the freq that your network update")
+flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
 
 PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
 

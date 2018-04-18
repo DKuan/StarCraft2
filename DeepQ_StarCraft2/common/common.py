@@ -164,6 +164,7 @@ def check_action(obs, action):
     #so the distance is too small that we should let them spread
     distance_all = 0
     distance_min = 40
+    distance_max = 80
 
     pos_friend = np.array(unit_postion(obs, 1))
     [player_y, player_x] = [pos_friend[:, 0], pos_friend[:, 1]]
@@ -179,6 +180,8 @@ def check_action(obs, action):
 
     if distance_all < distance_min:
         action = 1
+    if distance_all > distance_max:
+        action = 0
 
     return action
 
