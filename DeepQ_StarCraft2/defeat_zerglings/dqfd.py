@@ -139,11 +139,8 @@ def learn(env,
           callback=None,
           demo_replay=[]):
   """Train a deepq model.
-
 Parameters
 -------
-env: pysc2.env.SC2Env
-    environment to train on
 q_func: (tf.Variable, int, str, bool) -> tf.Variable
     the model that takes the following inputs:
         observation_in: object
@@ -154,36 +151,14 @@ q_func: (tf.Variable, int, str, bool) -> tf.Variable
         reuse: bool
             should be passed to outer variable scope
     and returns a tensor of shape (batch_size, num_actions) with values of every action.
-lr: float
-    learning rate for adam optimizer
-max_timesteps: int
-    number of env steps to optimizer for
-buffer_size: int
-    size of the replay buffer
-exploration_fraction: float
-    fraction of entire training period over which the exploration rate is annealed
-exploration_final_eps: float
-    final value of random action probability
-train_freq: int
-    update the model every `train_freq` steps.
-    set to None to disable printing
-batch_size: int
-    size of a batched sampled from replay buffer for training
-print_freq: int
-    how often to print out training progress
-    set to None to disable printing
 checkpoint_freq: int
     how often to save the model. This is so that the best version is restored
     at the end of the training. If you do not wish to restore the best version at
     the end of the training set this variable to None.
-learning_starts: int
-    how many steps of the model to collect transitions for before learning starts
 gamma: float
     discount factor
 target_network_update_freq: int
     update the target network every `target_network_update_freq` steps.
-prioritized_replay: True
-    if True prioritized replay buffer will be used.
 prioritized_replay_alpha: float
     alpha parameter for prioritized replay buffer
 prioritized_replay_beta0: float
@@ -249,23 +224,25 @@ act: ActWrapper
   TU.initialize()
   update_target()
 
+  group_id = 0
+  old_num = 0
+  reset = True
+  Action_Choose = False
+  player = []
   episode_rewards = [0.0]
   saved_mean_reward = None
+  marine_record = {}
 
   obs = env.reset()
   screen = obs[0].observation["screen"][_UNIT_TYPE]
   obs, xy_per_marine = common.init(env, obs)
-  group_id = 0
-  old_num = 0
-  reset = True
+
 
   with tempfile.TemporaryDirectory() as td:
     model_saved = False
     model_file = os.path.join(td, "model")
 
     for t in range(max_timesteps):
-      if t == 0:
-        Action_Choose = False
       if callback is not None:
         if callback(locals(), globals()):
           break
@@ -297,7 +274,8 @@ act: ActWrapper
 
       if Action_Choose==True:
         #the first action
-        obs, screen, player = common.select_marine(env, obs)
+        obs, screen, group_id, player = common.select_marine(env, obs)
+        marine_record = common.run_record(marine_record, obs)
 
       else:
         # the second action
@@ -306,7 +284,7 @@ act: ActWrapper
         action = common.check_action(obs, action)
         new_action = None
 
-        obs, new_action = common.marine_action(env, obs, player, action)
+        obs, new_action, marine_record = common.marine_action(env, obs, group_id, player, action, marine_record)
         army_count = env._obs[0].observation.player_common.army_count
 
         try:
@@ -326,6 +304,7 @@ act: ActWrapper
         for i in range(len(player_y)):
           new_screen[player_y[i]][player_x[i]] = 49
 
+      #update every step
       rew = obs[0].reward
       done = obs[0].step_type == environment.StepType.LAST
       episode_rewards[-1] += rew

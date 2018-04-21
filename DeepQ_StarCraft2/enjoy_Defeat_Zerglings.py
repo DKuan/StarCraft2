@@ -51,7 +51,7 @@ Logger.DEFAULT \
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/cz/DKuan/StarCraft2-master/DeepQ_StarCraft2/models/deepq/zergling_32.1.pkl",
+flags.DEFINE_string("trained_model", "/home/tld/PycharmProjects/DeepQ_StarCraft2/models/deepq/zergling_45.6.pkl",
                     "the model you has trained.")
 flags.DEFINE_bool("visualize", True, "if you want to see the game")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")

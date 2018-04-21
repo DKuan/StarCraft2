@@ -1,10 +1,9 @@
+# update date 4-19
 import numpy as np
-
 from pysc2.lib import actions as sc2_actions
 from pysc2.lib import features
 from pysc2.lib import actions
 from pysc2.env import environment
-import common.Common_T as common_T
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
@@ -57,15 +56,12 @@ def init(env, obs):
   for i in range(unitlist.__len__() if unitlist.__len__() <11 else 10):
     xy_per_marine[str(i)] = unitlist[i]
     obs = env.step(actions=[
-              sc2_actions.FunctionCall(_SELECT_POINT, [[1], [unitlist[i][1], unitlist[i][0]]])
+              sc2_actions.FunctionCall(_SELECT_POINT, [[0], [unitlist[i][1], unitlist[i][0]]])
             ])
     obs = env.step(actions=[
           sc2_actions.FunctionCall(_SELECT_CONTROL_GROUP,
                                    [[_CONTROL_GROUP_SET], [i]])
         ])
-    obs = env.step(actions=[
-        sc2_actions.FunctionCall(_SELECT_POINT, [[1], [unitlist[i][1], unitlist[i][0]]])
-     ])
 
   return obs, xy_per_marine
 
@@ -102,14 +98,17 @@ UP, DOWN, LEFT, RIGHT = 'up', 'down', 'left', 'right'
 
 def select_marine(env, obs):
     player_y = []
+    player_x = []
+    group_id = 0
     group_list = update_group_list(obs)
+    screen = obs[0].observation["screen"][_UNIT_TYPE]
 
     if (check_group_list(env, obs)):
         obs, xy_per_marine = init(env, obs)
         group_list = update_group_list(obs)
 
     # If there is no marine in danger, select random
-    if  (len(group_list) > 0):
+    if  (len(group_list) > 0 ):
         while(len(player_y)==0):
             group_id = np.random.choice(group_list)
 
@@ -125,8 +124,9 @@ def select_marine(env, obs):
             #in case done
             done = obs[0].step_type == environment.StepType.LAST
             if done:
-                return obs, screen, [[0], [0]]
+                return obs, screen, group_id, [[0], [0]]
     else:
+        group_id = 0
         player_x = [1]
         player_y = [1]
         obs = env.step(actions=[
@@ -134,7 +134,7 @@ def select_marine(env, obs):
         ])
         screen = obs[0].observation["screen"][_UNIT_TYPE]
     try:
-        return obs, screen, [player_x[0], player_y[0]]
+        return obs, screen, group_id, [player_x[0], player_y[0]]
     except Exception as e:
         a = 1
 
@@ -197,13 +197,47 @@ def check_coord(coord):
         coord[1] = 63
     return coord
 
+def run_record(marine_record, obs):
+    #marine_record  [flag, direction, tar_y, tar_x]
+    #
+    move_id = []
+    number_marine = marine_record.__len__()
+    #in case the first time
+    if number_marine == 0:
+        return marine_record
+    keys = marine_record.keys()
+    for id in keys:
+        target_position = [int(marine_record[id][2]), int(marine_record[id][3])]
+        Type_Map = obs[0].observation["screen"][_UNIT_TYPE]
+        Type = Type_Map[target_position[0]][target_position[1]]
+        if (Type != 48 and Type != 49):
+            marine_record[id][0] = 0
+            move_id.append(id)
+        else:
+            marine_record[id][0] =  1
+    print("the running is {0}".format(move_id))
+    return marine_record
 
-def marine_action(env, obs, player, action):
+def run_record_(marine_record, group_id, obs, coord):
+    player_selected = obs[0].observation["screen"][_SELECTED]
+    select_y, selected_x = (player_selected == 1).nonzero()
+
+    #update the marine target postion
+    if len(coord) == 2 and coord[0]!= 0:
+        direction = coord - [select_y[0], selected_x[0]]
+        direction = direction[0] / (direction[1] + 0.0001)
+        marine_record[group_id] = [0, direction, coord[1], coord[0]]
+
+    marine_record = run_record(marine_record, obs)
+    return marine_record
+
+def marine_action(env, obs,  group_id, player, action, marine_record):
     # ---------
     # 0 gather  2 attack
     # 1 spread   3  run
     # ---------
-  max_length = 4    #as the four_udlr
+  coord = []
+  max_length = 4    #as the four_udlr 4
   pos_friend=np.array(unit_postion(obs, 1))
   pos_enemy = np.array(unit_postion(obs, 0))
   [player_y, player_x] = [pos_friend[:, 0],pos_friend[:,1]]
@@ -242,6 +276,7 @@ def marine_action(env, obs, player, action):
         coord = np.array(player) + diff_pos
 
     coord = check_coord(coord)
+
     new_action = [
         sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
     ]
@@ -267,7 +302,9 @@ def marine_action(env, obs, player, action):
   else:
       new_action = [sc2_actions.FunctionCall(_NO_OP, [])]  # it means no enemy
 
-  return obs, new_action
+  # deal the run_record problem
+  marine_record = run_record_(marine_record, group_id, obs, coord)
+  return obs, new_action, marine_record
 
 
 def unit_postion(obs, flag):
