@@ -1,36 +1,17 @@
-# from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
-# from baselines import logger
-# import numpy as np
-# logdir = "./tensorboard"
-# Logger.DEFAULT \
-#       = Logger.CURRENT \
-#       = Logger(dir=None,
-#                output_formats=[TensorBoardOutputFormat(logdir)])
-#
-# for i in range(10):
-#     logger.record_tabular("steps", i)
-#     logger.record_tabular("episodes", i)
-#     logger.record_tabular("reward", i)
-#     logger.record_tabular("mean 100 episode reward",
-#                           i)
-#     logger.dump_tabular()
-# a =[[1,2], [3,4], [4,5]]
-# b=np.array(a)
-# length = b.size//2
-# c = b[:,0]
-#
-# print(c)
-
 import tensorflow as tf
 import numpy as np
 
-sess = tf.InteractiveSession()
-x =tf.constant([[1,1],
-                [2,3]])
-y = tf.constant([[2,3],
-                [4,5]])
-floatx = tf.constant([
-        [1., 2.],
-        [2., 3.]
-    ])
-b=tf.transpose(x)
+
+
+with tf.device("/gpu:0"):
+        hello = tf.constant("my test")
+        var1 = tf.constant(dtype=tf.float32, value=1)
+        var2 = tf.constant(dtype=tf.float32, value=2)
+        var3 = tf.multiply(var1, var2)
+config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+with tf.Session(config=config) as sess:
+    sess.run(tf.global_variables_initializer())
+    print(sess.run(hello))
+    print(sess.run(var3))
+
+

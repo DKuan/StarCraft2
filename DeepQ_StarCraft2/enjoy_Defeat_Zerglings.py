@@ -1,8 +1,9 @@
+# four _ udlr
+# update date 4-27 to make the time-net
 import sys
 import datetime
 from absl import flags
 import baselines.deepq.utils as U
-import baselines.common.tf_util as TU
 import numpy as np
 from common import common
 from baselines import deepq
@@ -11,10 +12,9 @@ from pysc2.env import sc2_env
 from pysc2.lib import actions
 from pysc2.lib import features
 from pysc2.lib import actions as sc2_actions
-import defeat_zerglings.dqfd as deep_Defeat_zerglings
-
+import defeat_zerglings.deepq_one as deep_Defeat_zerglings
 from baselines import logger
-from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
+from baselines.logger import Logger, TensorBoardOutputFormat
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _UNIT_TYPE = features.SCREEN_FEATURES.unit_type.index
@@ -41,22 +41,20 @@ _SELECT_ALL = [0]
 
 UP, DOWN, LEFT, RIGHT = 'up', 'down', 'left', 'right'
 
-#to record the output
+# to record the output
 start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
 logdir = "./tensorboard/enjoy/%s" % start_time
-Logger.DEFAULT \
-      = Logger.CURRENT \
-      = Logger(dir=None,
+Logger.DEFAULT = Logger(dir=None,
                output_formats=[TensorBoardOutputFormat(logdir)])
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
-flags.DEFINE_string("trained_model", "/home/tld/PycharmProjects/DeepQ_StarCraft2/models/deepq/zergling_45.6.pkl",
+flags.DEFINE_string("trained_model", "/home/tld/PycharmProjects/DeepQ_StarCraft2/models/deepq/zergling_79.3.pkl",
                     "the model you has trained.")
 flags.DEFINE_bool("visualize", True, "if you want to see the game")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")
 flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
-flags.DEFINE_integer("episode_steps", 2800, "the steps of every episode spends")
+flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")
 
 
 def main():
@@ -106,7 +104,6 @@ def main():
                     # the second action
                     action = act(
                         np.array(screen)[None])[0]
-                    action = common.check_action(obs, action)
                     obs, new_action = common.marine_action(env, obs, player, action)
                     army_count = env._obs[0].observation.player_common.army_count
 

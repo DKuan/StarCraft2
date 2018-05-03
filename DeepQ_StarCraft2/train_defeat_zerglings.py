@@ -1,151 +1,150 @@
-# people experience  algorithm
-import sys
-import os
-import datetime
-
-from absl import flags
-from baselines import deepq
-from pysc2.env import sc2_env
+# four _ udlr
+# update date 4-30 to make the time-net
+import os, log_config
+import  common.common as common
+from pysc2.env import sc2_env, environment
 from pysc2.lib import actions
+from pysc2.lib import actions as sc2_actions
 
-from defeat_zerglings import dqfd
-from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
+import baselines.common.tf_util as TU
+import tensorflow as tf
+from defeat_zerglings import deepq_two
+from defeat_zerglings import deepq_one
+
 _MOVE_SCREEN = actions.FUNCTIONS.Move_screen.id
 _SELECT_ARMY = actions.FUNCTIONS.select_army.id
+_SELECT_UNIT = actions.FUNCTIONS.select_unit.id
+_STOP_QUICK = actions.FUNCTIONS.Stop_quick.id
+_NO_OP = actions.FUNCTIONS.no_op.id
+
+_SELECT_UNIT_ALL = 2
 _SELECT_ALL = [0]
 _NOT_QUEUED = [0]
 
-FLAGS = flags.FLAGS
-# people experience  algorithm
-flags.DEFINE_string("algorithm", "deepq", "RL algorithm to use.")
-flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
-
-flags.DEFINE_boolean("dueling", True, "dueling")
-flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
-flags.DEFINE_bool("visualize", True, "if you want to see the game")
-
-flags.DEFINE_float("exploration_final_eps",  0.01, "your final Exploration Fraction")
-flags.DEFINE_float("exploration_fraction",  0.47, "Exploration Fraction")
-flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
-flags.DEFINE_float("lr",  0.001, "Learning rate")
-
-flags.DEFINE_integer("minimap_size_px", 32, "minimap size that show in the down_left ")
-flags.DEFINE_integer("train_freq", 100, "the freq that you train your model")
-flags.DEFINE_integer("batch_size", 1500, "the number of your examples that you want to train your model")
-flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
-flags.DEFINE_integer("learning_starts", 45000, "Learning start time")
-flags.DEFINE_integer("timesteps", 2500000, "most Steps to train")
-flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
-flags.DEFINE_integer("step_mul", 5, "the time of every step spends") # 5
-flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")# 2000
-flags.DEFINE_integer("buffer_size", 45000, "the number of actions that you want to store")
-flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
-
-PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
-
-best_reward_episode = 0
-max_mean_reward = 0
-last_filename = ""
-start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
-
 def main():
-  FLAGS(sys.argv)
+    Action_Choose = False
+    done = False
+    flag_changeNetwork = False
+    sc_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+    FLAGS = log_config.log_all()
 
-  logdir = "tensorboard"
-  if(FLAGS.algorithm == "deepq"):
-    logdir = "./tensorboard/zergling/%s/%s_%s_prio%s_duel%s_lr%s/%s" % (
-      FLAGS.algorithm,
-      FLAGS.timesteps,
-      FLAGS.exploration_fraction,
-      FLAGS.prioritized,
-      FLAGS.dueling,
-      FLAGS.lr,
-      start_time
-    )
+    with sc2_env.SC2Env(
+            map_name=FLAGS.map_name,
+            step_mul=FLAGS.step_mul,
+            visualize=FLAGS.visualize,
+            minimap_size_px=(FLAGS.minimap_size_px, FLAGS.minimap_size_px),
+            difficulty= FLAGS.difficulty,
+            game_steps_per_episode=FLAGS.episode_steps) as env:
 
-  if(FLAGS.log == "tensorboard"):
-    Logger.DEFAULT \
-      = Logger.CURRENT \
-      = Logger(dir='log.txt',
-               output_formats=[TensorBoardOutputFormat(logdir)])
+        #step1 init the train net.
+        obs = env.reset()
+        train_one=deepq_one.deepq_one()
+        train_two = deepq_two.deepq_two()
 
-  elif(FLAGS.log == "stdout"):
-    os.mkdir(logdir)
-    Logger.DEFAULT \
-      = Logger.CURRENT \
-      = Logger(dir=None,
-               output_formats=[HumanOutputFormat(logdir+"/log.txt")])
+        sess = TU.make_session(num_cpu=4)
+        sess.__enter__()
 
-  with sc2_env.SC2Env(
-      map_name="DefeatZerglingsAndBanelings",
-      minimap_size_px = (FLAGS.minimap_size_px, FLAGS.minimap_size_px),
-      step_mul=FLAGS.step_mul,
-      visualize=FLAGS.visualize,
-      game_steps_per_episode= FLAGS.episode_steps) as env:
+        #1 Initialize the parameters and copy them to the target network.
+        TU.initialize()
+        train_one.update_target()
+        train_two.update_target()
 
-    model = deepq.models.cnn_to_mlp(
-      convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],
-      hiddens=[256],
-      dueling=True
-    )
+        #1 start train the two deepq network
+        max_timesteps = 2500000
+        for t in range(max_timesteps):
+            # step2 use the training network
+            if not flag_changeNetwork:
+                 env, obs, Action_Choose, sc_action = train_one.action_network(env, obs, t)
+            else:
+                 env, obs, Action_Choose, sc_action = train_two.action_network(env, obs, t)
+            #the function will be done when the action is chosen
+            if Action_Choose is not True:
+                try:
+                    army_count = env._obs[0].observation.player_common.army_count
+                    if army_count > 0 and (_MOVE_SCREEN in obs[0].observation["available_actions"]):
+                        obs = env.step(actions=sc_action)
+                    else:
+                        sc_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+                        obs = env.step(actions=sc_action)
+                except Exception as e:
+                    print(sc_action)
+                    print(e)
+                    sc_action = [sc2_actions.FunctionCall(_NO_OP, [])]
+                    obs = env.step(actions=sc_action)
 
-    act = dqfd.learn(
-      env,
-      q_func=model,
-      num_actions=FLAGS.num_actions,
-      lr=FLAGS.lr,
-      print_freq= FLAGS.print_freq,
-      max_timesteps=FLAGS.timesteps,
-      buffer_size=FLAGS.buffer_size,
-      exploration_fraction=FLAGS.exploration_fraction,
-      exploration_final_eps=FLAGS.exploration_final_eps,
-      train_freq=FLAGS.train_freq,
-      learning_starts=FLAGS.learning_starts,
-      target_network_update_freq=FLAGS.target_network_update_freq,
-      gamma=FLAGS.gamma,
-      prioritized_replay=FLAGS.prioritized,
-      callback=deepq_callback
-    )
-    act.save("defeat_zerglings.pkl")
+            #step3 train the network
+            if not flag_changeNetwork:
+                train_one.learn(obs, t)
+            else:
+                train_two.learn(obs, t)
 
-def deepq_callback(locals, globals):
-  global max_mean_reward, last_filename, best_reward_episode
-  if('done' in locals and locals['done'] == True):
+            #step 4 learn and change the flag
+            done = obs[0].step_type == environment.StepType.LAST
+            if done:
+                # no matter the action is what,we just want the screen and the reward
+                train_one.Action_Choose = False  # should regroup the army
+                train_one.learn(obs, t)
+                #game/flags reset
+                obs = env.reset()
+                train_one.episode_rewards.append(0.0)   #add another record
+                train_two.episode_rewards.append(0.0)  # add another record
+                flag_changeNetwork = False              #should restart the game
 
-    print("mean_100ep_reward : %s max_mean_reward : %s" %
-          (locals['mean_100ep_reward'], max_mean_reward))
+            # change the train_one to train_two     when the army is close to the enemy
+            if (train_two.flag_common.changeNetwork(obs)) and (flag_changeNetwork == False):
+                train_two.Action_Choose = False
+                train_two.flag_common.secondperiod = False
+                flag_changeNetwork =True
 
-    if ('mean_100ep_reward' in locals
-          and locals['num_episodes'] >= 500
-          and ( ((locals['num_episodes']-best_reward_episode)%100 ==0) or (locals['mean_100ep_reward'] > max_mean_reward))
-      ):
-      if(not os.path.exists(os.path.join(PROJ_DIR,'models/deepq/'))):
-        try:
-          os.mkdir(os.path.join(PROJ_DIR,'models/'))
-        except Exception as e:
-          print(str(e))
-        try:
-          os.mkdir(os.path.join(PROJ_DIR,'models/deepq/'))
-        except Exception as e:
-          print(str(e))
-      if locals['mean_100ep_reward'] > max_mean_reward:
-        if(last_filename != ""):
-          os.remove(last_filename)
-          print("delete last model file : %s" % last_filename)
+            # change the train_two to train_one     when the army is far away from the enemy
+            #because the flag just can be changed in check_group is true,so the flag_secondperiod is safe
+            if (train_two.flag_common.secondperiod) and (flag_changeNetwork == True):
+                obs = env.step(actions= [sc2_actions.FunctionCall(_STOP_QUICK, [[0]])])
+                train_one.Action_Choose = False
+                flag_changeNetwork = False
 
-        max_mean_reward = locals['mean_100ep_reward']
-        best_reward_episode = locals['num_episodes']
-        act = dqfd.ActWrapper(locals['act'])
 
-        filename = os.path.join(PROJ_DIR,'models/deepq/zergling_%s.pkl' % locals['mean_100ep_reward'])
-        act.save(filename)
-        print("save best mean_100ep_reward model to %s" % filename)
-        last_filename = filename
-      else:
-        act = dqfd.ActWrapper(locals['act'])
-        filename = os.path.join(PROJ_DIR, 'models/deepq/zergling_%s.pkl' % locals['mean_100ep_reward'])
-        act.save(filename)
 
 
 if __name__ == '__main__':
-  main()
+    main()
+
+
+def deepq_callback(locals, globals, PROJ_DIR):
+    global max_mean_reward, last_filename, best_reward_episode
+    if ('done' in locals and locals['done'] == True):
+
+        print("mean_100ep_reward : %s max_mean_reward : %s" %
+              (locals['mean_100ep_reward'], max_mean_reward))
+
+        if ('mean_100ep_reward' in locals
+                and locals['num_episodes'] >= 500
+                and (((locals['num_episodes'] - best_reward_episode) % 50 == 0) or (
+                        locals['mean_100ep_reward'] > max_mean_reward))
+        ):
+            if (not os.path.exists(os.path.join(PROJ_DIR, 'models/deepq/'))):
+                try:
+                    os.mkdir(os.path.join(PROJ_DIR, 'models/'))
+                except Exception as e:
+                    print(str(e))
+                try:
+                    os.mkdir(os.path.join(PROJ_DIR, 'models/deepq/'))
+                except Exception as e:
+                    print(str(e))
+            if locals['mean_100ep_reward'] > max_mean_reward:
+                if (last_filename != ""):
+                    os.remove(last_filename)
+                    print("delete last model file : %s" % last_filename)
+
+                max_mean_reward = locals['mean_100ep_reward']
+                best_reward_episode = locals['num_episodes']
+                act = deepq_one.ActWrapper(locals['act'])
+
+                filename = os.path.join(PROJ_DIR, 'models/deepq/zergling_%s.pkl' % locals['mean_100ep_reward'])
+                act.save(filename)
+                print("save best mean_100ep_reward model to %s" % filename)
+                last_filename = filename
+            else:
+                act = deepq_one.ActWrapper(locals['act'])
+                filename = os.path.join(PROJ_DIR, 'models/deepq/zergling_%s.pkl' % locals['mean_100ep_reward'])
+                act.save(filename)
