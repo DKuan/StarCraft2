@@ -179,6 +179,7 @@ class deepq_one(object):
         self.Action_Choose = False
         self.reset = False
         self.old_num = 0
+        self.old_episode = 0
         self.episode_rewards = [0.0]
         self.saved_mean_reward = 0
         self.sc_action = 0
@@ -290,6 +291,7 @@ class deepq_one(object):
 
     def learn(self, obs, t):
         new_screen = []
+        episode_score = obs[0].observation["score_cumulative"][0]   #must use newest obs
         done = obs[0].step_type == environment.StepType.LAST
 
         if done:
@@ -310,7 +312,6 @@ class deepq_one(object):
             new_screen[player_y[i]][player_x[i]] = _PLAYER_SELECTED_GROUP
 
         #deepq_one-- update every step
-        episode_score = obs[0].observation["score_cumulative"][0]
         rew = (obs[0].reward if done != True else episode_score)
         self.episode_rewards[-1] += rew
         reward = self.episode_rewards[-1]
@@ -344,39 +345,35 @@ class deepq_one(object):
             self.update_target()
 
         num_episodes = len(self.episode_rewards)
-        # test for me
-        if num_episodes > self.old_num:
-            self.old_num = num_episodes
-            print("now the episode is {}".format(num_episodes))
-        # test for me
         if (num_episodes > 102):
-            mean_100ep_reward = round(np.mean(self.episode_rewards[-101:-1]), 1)
+            self.mean_100ep_reward = round(np.mean(self.episode_rewards[-101:-1]), 1)
         else:
-            mean_100ep_reward = round(np.mean(self.episode_rewards), 1)
+            self.mean_100ep_reward = round(np.mean(self.episode_rewards), 1)
 
         #tensorboard print to the website
-        if done and self.print_freq is not None and len(
-                self.episode_rewards) % self.print_freq == 0:
+        if done \
+                and self.print_freq is not None \
+                and len(self.episode_rewards) % self.print_freq == 0:
             print("get the log")
             logger.record_tabular("steps", t)
             logger.record_tabular("episodes", num_episodes)
             logger.record_tabular("reward", reward)
             logger.record_tabular("mean 100 episode reward",
-                                  mean_100ep_reward)
+                                  self.mean_100ep_reward)
             logger.record_tabular("% time spent exploring",
                                   int(100 * self.exploration.value(t)))
             logger.dump_tabular()
 
         if (self.checkpoint_freq is not None and t > self.learning_starts
                 and num_episodes > 100 and t % self.checkpoint_freq == 0):
-            if self.saved_mean_reward is None or mean_100ep_reward > self.saved_mean_reward:
+            if self.saved_mean_reward is None or self.mean_100ep_reward > self.saved_mean_reward:
                 if self.print_freq is not None:
                     logger.log(
                         "Saving model due to mean reward increase: {} -> {}".
-                            format(self.saved_mean_reward, mean_100ep_reward))
+                            format(self.saved_mean_reward, self.mean_100ep_reward))
                 U.save_state(model_file)
                 model_saved = True
-                saved_mean_reward = mean_100ep_reward
+                self.saved_mean_reward = self.mean_100ep_reward
 
         if model_saved:
             if self.print_freq is not None:
@@ -386,10 +383,11 @@ class deepq_one(object):
 
         #Model save callback
         if  (num_episodes >= 300
-            and ( ((num_episodes - self.best_reward_episode) % 50 == 0) or (mean_100ep_reward > self.max_mean_reward))
-            and (num_episodes >  self.best_reward_episode)
+            and ( ((num_episodes - self.best_reward_episode) % 40 == 0) or (self.mean_100ep_reward > self.max_mean_reward))
+            and (num_episodes >  self.old_episode)
         ):
-            print("the mean 100ep_reward is {}".format(mean_100ep_reward))
+            #in case always into this judge
+            self.old_episode = num_episodes
 
             if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_one/'))):
                 try:
@@ -400,17 +398,17 @@ class deepq_one(object):
                     os.mkdir(os.path.join(self.PROJ_DIR, 'models/deepq_one/'))
                 except Exception as e:
                     print(str(e))
-            if mean_100ep_reward > self.max_mean_reward:
+            if self.mean_100ep_reward > self.max_mean_reward:
                 if (self.last_filename != ""):
                     os.remove(self.last_filename)
                     print("delete last model file : %s" % self.last_filename)
 
-                self.max_mean_reward = mean_100ep_reward
+                self.max_mean_reward = self.mean_100ep_reward
                 self.best_reward_episode = num_episodes
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % self.mean_100ep_reward)
                 self.act_save.save(filename)
-                print("save best mean_100ep_reward model to %s" % filename)
+                print("save best self.mean_100ep_reward model to %s" % filename)
                 self.last_filename = filename
             else:
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % self.mean_100ep_reward)
                 self.act_save.save(filename)

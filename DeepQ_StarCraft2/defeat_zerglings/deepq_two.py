@@ -180,8 +180,8 @@ class deepq_two(object):
         self.prioritized_replay_beta_iters = None
         self.Action_Choose = False
         self.reset = False
-        self.old_num = 0
         self.episode_rewards = [0.0]
+        self.old_episode = 0
         self.saved_mean_reward = 0
         self.sc_action = 0
 
@@ -343,15 +343,11 @@ class deepq_two(object):
             self.update_target()
 
         num_episodes = len(self.episode_rewards)
-        # test for me
-        if num_episodes > self.old_num:
-            self.old_num = num_episodes
-            print("now the episode is {}".format(num_episodes))
-        # test for me
         if (num_episodes > 102):
             mean_100ep_reward = round(np.mean(self.episode_rewards[-101:-1]), 1)
         else:
             mean_100ep_reward = round(np.mean(self.episode_rewards), 1)
+
 
         if done and self.print_freq is not None and len(
                 self.episode_rewards) % self.print_freq == 0:
@@ -374,19 +370,22 @@ class deepq_two(object):
                             format(self.saved_mean_reward, mean_100ep_reward))
                 U.save_state(model_file)
                 model_saved = True
-                saved_mean_reward = mean_100ep_reward
+                self.saved_mean_reward = mean_100ep_reward
 
         if model_saved:
             if self.print_freq is not None:
                 logger.log("Restored model with mean reward: {}".format(
-                    saved_mean_reward))
+                    self.saved_mean_reward))
             U.load_state(model_file)
 
         #Model save callback
         if  (num_episodes >= 300
-        and ( ((num_episodes - self.best_reward_episode) % 50 == 0) or (mean_100ep_reward > self.max_mean_reward))
-        and (num_episodes >  self.best_reward_episode)
+        and ( ((num_episodes - self.best_reward_episode) % 40 == 0) or (mean_100ep_reward > self.max_mean_reward))
+        and (num_episodes >  self.old_episode)
         ):
+            # in case always into this judge
+            self.old_episode = num_episodes
+
             if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_two/'))):
                 try:
                     os.mkdir(os.path.join(self.PROJ_DIR, 'models/'))

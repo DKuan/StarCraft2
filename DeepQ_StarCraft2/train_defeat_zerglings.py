@@ -84,6 +84,9 @@ def main():
                 # no matter the action is what,we just want the screen and the reward
                 train_one.Action_Choose = False  # should regroup the army
                 train_one.learn(obs, t)
+                print("episode is {}".format(len(train_one.episode_rewards)))
+                print("mean_100ep_reward  is {}".format(train_one.mean_100ep_reward))
+
                 #game/flags reset
                 obs = env.reset()
                 train_one.episode_rewards.append(0.0)   #add another record

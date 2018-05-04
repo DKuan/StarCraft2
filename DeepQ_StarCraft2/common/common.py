@@ -274,7 +274,7 @@ class flag_common(object):
 
     def changeNetwork(self, obs):
         min_len = 80
-        min_len_flag = 25
+        min_len_flag = 23
         screen_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
         enemy_y, enemy_x = np.average((screen_relative == _PLAYER_HOSTILE).nonzero(), axis=1)
         player_y, player_x = (screen_relative == _PLAYER_FRIENDLY).nonzero()

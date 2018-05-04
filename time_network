@@ -1,0 +1,3 @@
+2018-5-4
+just train two network from the first time,and it can learn to mean_100ep_reward=50+,
+so the next work is to make the train_two is the trained network,then we can see if the score is easy to up to 50+
