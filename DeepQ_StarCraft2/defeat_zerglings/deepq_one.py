@@ -144,6 +144,7 @@ class deepq_one(object):
         config = configparser.ConfigParser()
         config.read_file(open("./defeat_zerglings/deepq_par.ini"))
         #save model par
+        self.start_time = 0
         self.PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
         self.max_mean_reward = 0
         self.best_reward_episode = 0
@@ -211,7 +212,7 @@ class deepq_one(object):
             grad_norm_clipping=10,
             scope="deepq_1")
 
-        start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
+        self.start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
         logdir = "./tensorboard/zergling/%s/%s_%s_prio%s_duel%s_lr%s/%s_one" % (
             "deepq",
             self.max_timesteps,
@@ -219,7 +220,7 @@ class deepq_one(object):
             self.prioritized_replay,
             self.dueling,
             self.lr,
-            start_time
+            self.start_time
         )
 
         Logger.DEFAULT \
@@ -312,8 +313,12 @@ class deepq_one(object):
             new_screen[player_y[i]][player_x[i]] = _PLAYER_SELECTED_GROUP
 
         #deepq_one-- update every step
-        rew = (obs[0].reward if done != True else episode_score)
-        self.episode_rewards[-1] += rew
+        # rew = (obs[0].reward if done != True else episode_score)
+        if done != True:
+            rew = obs[0].reward
+        else:
+            rew = episode_score
+        self.episode_rewards[-1] = rew
         reward = self.episode_rewards[-1]
 
         if  self.Action_Choose == False:  # only store the screen after the action is done
@@ -389,13 +394,13 @@ class deepq_one(object):
             #in case always into this judge
             self.old_episode = num_episodes
 
-            if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_one/'))):
+            if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_one/{}'.format(self.start_time)))):
                 try:
                     os.mkdir(os.path.join(self.PROJ_DIR, 'models/'))
                 except Exception as e:
                     print(str(e))
                 try:
-                    os.mkdir(os.path.join(self.PROJ_DIR, 'models/deepq_one/'))
+                    os.mkdir(os.path.join(self.PROJ_DIR, 'models/deepq_one/{}'.format(self.start_time)))
                 except Exception as e:
                     print(str(e))
             if self.mean_100ep_reward > self.max_mean_reward:
@@ -405,10 +410,10 @@ class deepq_one(object):
 
                 self.max_mean_reward = self.mean_100ep_reward
                 self.best_reward_episode = num_episodes
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % self.mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/{}/zergling_{}.pkl'.format(self.start_time,self.mean_100ep_reward))
                 self.act_save.save(filename)
                 print("save best self.mean_100ep_reward model to %s" % filename)
                 self.last_filename = filename
             else:
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/zergling_%s.pkl' % self.mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_one/{}/zergling_{}.pkl'.format(self.start_time,self.mean_100ep_reward))
                 self.act_save.save(filename)

@@ -213,7 +213,7 @@ class deepq_two(object):
             scope="deepq_2")
 
 
-        start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
+        self.start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
         logdir = "./tensorboard/zergling/%s/%s_%s_prio%s_duel%s_lr%s/%s_two" % (
             "deepq",
             self.max_timesteps,
@@ -221,7 +221,7 @@ class deepq_two(object):
             self.prioritized_replay,
             self.dueling,
             self.lr,
-            start_time
+            self.start_time
         )
 
         Logger.DEFAULT \
@@ -386,13 +386,13 @@ class deepq_two(object):
             # in case always into this judge
             self.old_episode = num_episodes
 
-            if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_two/'))):
+            if (not os.path.exists(os.path.join(self.PROJ_DIR, 'models/deepq_two/{}'.format(self.start_time)))):
                 try:
                     os.mkdir(os.path.join(self.PROJ_DIR, 'models/'))
                 except Exception as e:
                     print(str(e))
                 try:
-                    os.mkdir(os.path.join(self.PROJ_DIR, 'models/deepq_two/'))
+                    os.mkdir(os.path.join(self.PROJ_DIR, 'models/deepq_two/{}'.format(self.start_time)))
                 except Exception as e:
                     print(str(e))
             if mean_100ep_reward > self.max_mean_reward:
@@ -402,10 +402,10 @@ class deepq_two(object):
 
                 self.max_mean_reward = mean_100ep_reward
                 self.best_reward_episode = num_episodes
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_two/zergling_%s.pkl' % mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_two/{}/zergling_{}.pkl'.format(self.start_time,mean_100ep_reward))
                 self.act_save.save(filename)
-                print("save best mean_100ep_reward model to %s" % filename)
+                print("save best self.mean_100ep_reward model to %s" % filename)
                 self.last_filename = filename
             else:
-                filename = os.path.join(self.PROJ_DIR, 'models/deepq_two/zergling_%s.pkl' % mean_100ep_reward)
+                filename = os.path.join(self.PROJ_DIR, 'models/deepq_two/{}/zergling_{}.pkl'.format(self.start_time,mean_100ep_reward))
                 self.act_save.save(filename)
