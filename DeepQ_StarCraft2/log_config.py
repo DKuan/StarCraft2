@@ -5,7 +5,7 @@ def log_all():
     FLAGS = flags.FLAGS
 
     flags.DEFINE_boolean("dueling", True, "dueling")
-    flags.DEFINE_bool("visualize", False, "if you want to see the game")
+    flags.DEFINE_bool("visualize", True, "if you want to see the game")
 
     flags.DEFINE_string("map_name", "DefeatZerglingsAndBanelings", "the map you want to see.")
     flags.DEFINE_string("algorithm", "deepq", "the learning method you want to use.")

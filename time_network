@@ -4,3 +4,11 @@ so the next work is to make the train_two is the trained network,then we can see
 
 2018-5-5
   the result is just fine,so the next work is to change the network's frame,add the experienced trained_two network to the time_network,to see if the trained work is fast 
+
+2018-5-6
+   train a good result,and test it use the enjoy_mode,the mean_episode_reward is 70,so the way of use two network is a good thought.it really make a
+happy ending
+
+2018-5-7
+push the github
+best model - 2018-5-6 morning

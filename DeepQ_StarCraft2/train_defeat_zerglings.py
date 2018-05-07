@@ -8,8 +8,8 @@ from pysc2.lib import actions as sc2_actions
 
 import baselines.common.tf_util as TU
 import tensorflow as tf
-from defeat_zerglings import deepq_two
-from defeat_zerglings import deepq_one
+from defeat_zerglings import deepq_two_trained as deepq_two
+from defeat_zerglings import deepq_one_trained as deepq_one
 
 _MOVE_SCREEN = actions.FUNCTIONS.Move_screen.id
 _SELECT_ARMY = actions.FUNCTIONS.select_army.id
@@ -38,16 +38,13 @@ def main():
 
         #step1 init the train net.
         obs = env.reset()
-        train_one=deepq_one.deepq_one()
-        train_two = deepq_two.deepq_two()
 
         sess = TU.make_session(num_cpu=4)
         sess.__enter__()
 
-        #1 Initialize the parameters and copy them to the target network.
-        TU.initialize()
-        train_one.update_target()
-        train_two.update_target()
+        #then init the deepq_two_trained
+        train_two = deepq_two.deepq_two()
+        train_one=deepq_one.deepq_one()
 
         #1 start train the two deepq network
         max_timesteps = 2500000
@@ -111,3 +108,19 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+#for training
+# step1 init the train net.
+# obs = env.reset()
+# train_one = deepq_one.deepq_one()
+#
+# sess = TU.make_session(num_cpu=4)
+# sess.__enter__()
+#
+# # 1 Initialize the parameters and copy them to the target network.
+# TU.initialize()
+# train_one.update_target()
+#
+# # then init the deepq_two_trained
+# train_two = deepq_two.deepq_two()

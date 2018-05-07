@@ -56,9 +56,8 @@ class ActWrapper(object):
   def load(path, act_params, num_cpu=2):
     with open(path, "rb") as f:
       model_data = dill.load(f)
-    act = deepq.build_act(**act_params)
-    sess = TU.make_session(num_cpu=num_cpu)
-    sess.__enter__()
+    act = deepq.build_act(scope="deepq_2",**act_params)
+
     with tempfile.TemporaryDirectory() as td:
       arc_path = os.path.join(td, "packed.zip")
       with open(arc_path, "wb") as f:
@@ -148,7 +147,7 @@ class deepq_two(object):
         config.read_file(open("./defeat_zerglings/deepq_par.ini"))
 
         #trained model
-        self.trained_model = "/home/kuan/project/deepq_new/models/deepq/zergling_79.3.pkl"
+        self.trained_model = "defeat_zerglings/models/deepq_two/zergling_80.8.pkl"
 
         # save model par
         self.PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -191,8 +190,8 @@ class deepq_two(object):
     def __init__(self):
         self.load_ini()
         self.model_two = deepq.models.cnn_to_mlp(
-            convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],  #old
-            # convs=[(64, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],  5.4 train
+            # convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],  #old
+            convs=[(64, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)], # 5.4 train
             hiddens=[256],
             dueling=self.dueling
         )
@@ -206,19 +205,11 @@ class deepq_two(object):
             'num_actions': self.num_actions,
         }
 
-        # self.act, self.train, self.update_target, self.debug = deepq.build_train(
-        #     make_obs_ph=make_obs_ph,
-        #     q_func=self.model_two,
-        #     num_actions=self.num_actions,
-        #     optimizer=tf.train.AdamOptimizer(learning_rate=self.lr),
-        #     gamma=self.gamma,
-        #     grad_norm_clipping=10,
-        #     scope="deepq_2")
         self.act = load(
             self.trained_model, act_params=act_params)
 
 
-        start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
+        self.start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
         logdir = "./tensorboard/zergling/%s/%s_%s_prio%s_duel%s_lr%s/%s_two" % (
             "deepq",
             self.max_timesteps,
@@ -226,7 +217,7 @@ class deepq_two(object):
             self.prioritized_replay,
             self.dueling,
             self.lr,
-            start_time
+            self.start_time
         )
 
         Logger.DEFAULT \
