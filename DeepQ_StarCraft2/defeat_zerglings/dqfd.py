@@ -96,7 +96,6 @@ class ActWrapper(object):
 
 def load(path, act_params, num_cpu=16):
   """Load act function that was returned by learn function.
-
 Parameters
 ----------
 path: str
@@ -139,8 +138,11 @@ def learn(env,
           callback=None,
           demo_replay=[]):
   """Train a deepq model.
+
 Parameters
 -------
+env: pysc2.env.SC2Env
+    environment to train on
 q_func: (tf.Variable, int, str, bool) -> tf.Variable
     the model that takes the following inputs:
         observation_in: object
@@ -151,14 +153,36 @@ q_func: (tf.Variable, int, str, bool) -> tf.Variable
         reuse: bool
             should be passed to outer variable scope
     and returns a tensor of shape (batch_size, num_actions) with values of every action.
+lr: float
+    learning rate for adam optimizer
+max_timesteps: int
+    number of env steps to optimizer for
+buffer_size: int
+    size of the replay buffer
+exploration_fraction: float
+    fraction of entire training period over which the exploration rate is annealed
+exploration_final_eps: float
+    final value of random action probability
+train_freq: int
+    update the model every `train_freq` steps.
+    set to None to disable printing
+batch_size: int
+    size of a batched sampled from replay buffer for training
+print_freq: int
+    how often to print out training progress
+    set to None to disable printing
 checkpoint_freq: int
     how often to save the model. This is so that the best version is restored
     at the end of the training. If you do not wish to restore the best version at
     the end of the training set this variable to None.
+learning_starts: int
+    how many steps of the model to collect transitions for before learning starts
 gamma: float
     discount factor
 target_network_update_freq: int
     update the target network every `target_network_update_freq` steps.
+prioritized_replay: True
+    if True prioritized replay buffer will be used.
 prioritized_replay_alpha: float
     alpha parameter for prioritized replay buffer
 prioritized_replay_beta0: float
@@ -224,25 +248,23 @@ act: ActWrapper
   TU.initialize()
   update_target()
 
-  group_id = 0
-  old_num = 0
-  reset = True
-  Action_Choose = False
-  player = []
   episode_rewards = [0.0]
   saved_mean_reward = None
-  marine_record = {}
 
   obs = env.reset()
   screen = obs[0].observation["screen"][_UNIT_TYPE]
   obs, xy_per_marine = common.init(env, obs)
-
+  group_id = 0
+  old_num = 0
+  reset = True
 
   with tempfile.TemporaryDirectory() as td:
     model_saved = False
     model_file = os.path.join(td, "model")
 
     for t in range(max_timesteps):
+      if t == 0:
+        Action_Choose = False
       if callback is not None:
         if callback(locals(), globals()):
           break
@@ -274,21 +296,18 @@ act: ActWrapper
 
       if Action_Choose==True:
         #the first action
-        obs, screen, group_id, player = common.select_marine(env, obs)
-        marine_record = common.run_record(marine_record, obs)
-
+        obs, screen, player = common.select_marine(env, obs)
       else:
-        # the second action
+        #the second action
         action = act(
           np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
-        action = common.check_action(obs, action)
         new_action = None
 
-        obs, new_action, marine_record = common.marine_action(env, obs, group_id, player, action, marine_record)
+        obs, new_action = common.marine_action(env, obs, player, action)
         army_count = env._obs[0].observation.player_common.army_count
 
         try:
-          if army_count > 0 and (_MOVE_SCREEN in obs[0].observation["available_actions"]):
+          if army_count > 0 and (_MOVE_SCREEN   in obs[0].observation["available_actions"]):
             obs = env.step(actions=new_action)
           else:
             new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
@@ -298,23 +317,22 @@ act: ActWrapper
           print(e)
           new_action = [sc2_actions.FunctionCall(_NO_OP, [])]
           obs = env.step(actions=new_action)
-        # get the new screen in action 2
+        #get the new screen in action 2
         player_y, player_x = np.nonzero(obs[0].observation["screen"][_SELECTED] == 1)
         new_screen = obs[0].observation["screen"][_UNIT_TYPE]
         for i in range(len(player_y)):
           new_screen[player_y[i]][player_x[i]] = 49
 
-      #update every step
       rew = obs[0].reward
       done = obs[0].step_type == environment.StepType.LAST
       episode_rewards[-1] += rew
       reward = episode_rewards[-1]
 
-      if Action_Choose == False:  # only store the screen after the action is done
+      if Action_Choose==False:  #only store the screen after the action is done
         replay_buffer.add(screen, action, rew, new_screen, float(done))
-        mirror_new_screen   = common._map_mirror(new_screen)
-        mirror_screen       = common._map_mirror(screen)
-        replay_buffer.add(mirror_screen, action, rew, mirror_new_screen, float(done))
+        mirror_new_screen, mirror_action = common.map_mirror(new_screen, action)
+        mirror_screen = common._map_mirror(screen)
+        replay_buffer.add(mirror_screen, mirror_action, rew, mirror_new_screen, float(done))
 
       if done:
         obs = env.reset()
@@ -322,34 +340,37 @@ act: ActWrapper
         group_list = common.init(env, obs)
         episode_rewards.append(0.0)
 
+      #train our model use the data from the replay
       if t > learning_starts and t % train_freq == 0:
-          # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
-          if prioritized_replay:
-              experience = replay_buffer.sample(
-                batch_size, beta=beta_schedule.value(t))
-              (obses_t, actions, rewards, obses_tp1, dones, weights,
-              batch_idxes) = experience
-          else:
-              obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(
-                batch_size)
-              weights, batch_idxes = np.ones_like(rewards), None
-          td_errors = train(obses_t, actions, rewards, obses_tp1, dones,
+        # Minimize the error in Bellman's equation on a batch sampled from replay buffer.
+        if prioritized_replay:
+          experience = replay_buffer.sample(
+            batch_size, beta=beta_schedule.value(t))
+          (obses_t, actions, rewards, obses_tp1, dones, weights,
+           batch_idxes) = experience
+        else:
+          obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(
+            batch_size)
+          weights, batch_idxes = np.ones_like(rewards), None
+        td_errors = train(obses_t, actions, rewards, obses_tp1, dones,
                           weights)
-          if prioritized_replay:
-              new_priorities = np.abs(td_errors) + prioritized_replay_eps
-              replay_buffer.update_priorities(batch_idxes,
+        if prioritized_replay:
+          new_priorities = np.abs(td_errors) + prioritized_replay_eps
+          replay_buffer.update_priorities(batch_idxes,
                                           new_priorities)
 
+      # update our model's target
       if t > learning_starts and t % target_network_update_freq == 0:
         # Update target network periodically.
         update_target()
 
       num_episodes = len(episode_rewards)
-      #test for me
+
+      #tip to tell us the episode
       if num_episodes > old_num:
         old_num = num_episodes
-        print("now the episode is {}".format(num_episodes))
-      #test for me
+        print("now the episode is {} the time_step is {}".format(num_episodes, t))
+
       if(num_episodes > 102):
         mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
       else:
@@ -366,6 +387,7 @@ act: ActWrapper
                               int(100 * exploration.value(t)))
         logger.dump_tabular()
 
+      #model save
       if (checkpoint_freq is not None and t > learning_starts
           and num_episodes > 100 and t % checkpoint_freq == 0):
         if saved_mean_reward is None or mean_100ep_reward > saved_mean_reward:

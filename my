@@ -4,8 +4,11 @@ https://cgnicholls.github.io/reinforcement-learning/2017/03/27/a3c.html   a3c co
 哪些地方不能行走
 我尝试的解决办法是使用多个不同的buffer，比如说我设置了3个，一个用来正常的存储每一个执行的动作，再设置一个buffer专门用来存储执行得非常好的动作，在我的应用场景中，控制停止非常的重要，因此我也设置了一个一个buffer专门用来存储停止的非常好的动作。在训练的时候，专门用来存储好的动作的buffer可以从中选取batch size的1/4，停得非常好的buffer也是一样1/4，剩下的batch size的2/4是从正常的buffer里面提取的。这样的话就能保证每次训练的时候都能保证有一定比例的非常好的动作，不至于让模型走上歧途。实验证明效果变好了很多。希望对你也有帮助。总之有一种感觉，就是你在好的环境中就能学好，在不好的环境中就学坏的感
 
-21.56
-尝试是否把步长控制住，对结果有作用
-https://www.zhihu.com/question/32673260 batch size如何选取，不能太小，不能太大
-https://morvanzhou.github.io/tutorials/machine-learning/reinforcement-learning/4-6-prioritized-replay/ 优先级排序的replay抽取数据来训练
-	SumTree 方法抽样
+111
+https://blog.csdn.net/mycwq/article/details/49443775
+
+2018-4-13
+ exploration_fraction 不能设置的太大，过大会导致后面变异朝着不太好的方向发展，进化到一定的地步就按照	训练的比较好的结果一直走就好了，后半段过度的变异会导致模型效果的下降
+
+
+

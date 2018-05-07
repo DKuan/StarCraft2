@@ -1,36 +1,28 @@
-# from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
-# from baselines import logger
-# import numpy as np
+from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
+from baselines import logger
+import numpy as np
+
 # logdir = "./tensorboard"
 # Logger.DEFAULT \
 #       = Logger.CURRENT \
 #       = Logger(dir=None,
 #                output_formats=[TensorBoardOutputFormat(logdir)])
-#
-# for i in range(10):
-#     logger.record_tabular("steps", i)
-#     logger.record_tabular("episodes", i)
-#     logger.record_tabular("reward", i)
-#     logger.record_tabular("mean 100 episode reward",
-#                           i)
-#     logger.dump_tabular()
-# a =[[1,2], [3,4], [4,5]]
-# b=np.array(a)
-# length = b.size//2
-# c = b[:,0]
-#
-# print(c)
 
-import tensorflow as tf
-import numpy as np
+def map_mirror(screen):
+    length = len(screen[0])
+    mirror_screen = np.empty([length,length], int)
+    for i in range(length):
+      for j in range(length):
+        np.put(mirror_screen, j+i*length, screen[i][length-j-1])
 
-sess = tf.InteractiveSession()
-x =tf.constant([[1,1],
-                [2,3]])
-y = tf.constant([[2,3],
-                [4,5]])
-floatx = tf.constant([
-        [1., 2.],
-        [2., 3.]
-    ])
-b=tf.transpose(x)
+    return mirror_screen
+
+
+def main():
+    screen = np.array([[1,2],[3,4]])
+    new_screen = map_mirror(screen)
+    print(new_screen)
+
+
+if __name__ == '__main__':
+    main()

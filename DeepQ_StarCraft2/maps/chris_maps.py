@@ -11,7 +11,7 @@ class ChrisMaps(lib.Map):
   download = "https://github.com/chris-chris/pysc2-examples#get-the-maps"
   players = 1
   score_index = 0
-  game_steps_per_episode = 0
+  game_steps_per_episode = 3000
   step_mul = 8
 
 chris_maps = [

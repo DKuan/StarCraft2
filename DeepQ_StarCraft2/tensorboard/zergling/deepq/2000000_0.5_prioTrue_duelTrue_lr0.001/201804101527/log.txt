@@ -1,7 +1,0 @@
---------------------------------------
-| % time spent exploring  | 99       |
-| episodes                | 2        |
-| mean 100 episode reward | 43       |
-| reward                  | 43       |
-| steps                   | 292      |
---------------------------------------
