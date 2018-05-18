@@ -1,3 +1,4 @@
+#changed 2018-5-7
 import numpy as np
 
 from pysc2.lib import actions as sc2_actions
@@ -59,15 +60,12 @@ def init(env, obs):
   for i in range(unitlist.__len__() if unitlist.__len__() <11 else 10):
     xy_per_marine[str(i)] = unitlist[i]
     obs = env.step(actions=[
-              sc2_actions.FunctionCall(_SELECT_POINT, [[1], [unitlist[i][1], unitlist[i][0]]])
+              sc2_actions.FunctionCall(_SELECT_POINT, [[0], [unitlist[i][1], unitlist[i][0]]])
             ])
     obs = env.step(actions=[
           sc2_actions.FunctionCall(_SELECT_CONTROL_GROUP,
                                    [[_CONTROL_GROUP_SET], [i]])
         ])
-    obs = env.step(actions=[
-        sc2_actions.FunctionCall(_SELECT_POINT, [[1], [unitlist[i][1], unitlist[i][0]]])
-     ])
 
   return obs, xy_per_marine
 
@@ -182,31 +180,31 @@ def check_coord(coord):
     return coord
 
 def marine_action(env, obs, player, action):
-
+  step_length = 3
   if (len(player) == 2):
       if (action == 0):  # UP
-          coord = [player[0], player[1] - 4]
+          coord = [player[0], player[1] - step_length]
           coord = check_coord(coord)
           new_action = [
               sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
           ]
 
       elif (action == 1):  # DOWN
-          coord = [player[0], player[1] + 4]
+          coord = [player[0], player[1] + step_length]
           coord = check_coord(coord)
           new_action = [
               sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
           ]
 
       elif (action == 3):  # LEFT
-          coord = [player[0] - 4, player[1]]
+          coord = [player[0] - step_length, player[1]]
           coord = check_coord(coord)
           new_action = [
               sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])
           ]
 
       elif (action == 2):  # RIGHT
-          coord = [player[0] + 4, player[1]]
+          coord = [player[0] + step_length, player[1]]
           coord = check_coord(coord)
           new_action = [
               sc2_actions.FunctionCall(_MOVE_SCREEN, [[_NOT_QUEUED], coord])

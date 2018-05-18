@@ -36,15 +36,16 @@ flags.DEFINE_float("exploration_fraction",  0.47, "Exploration Fraction")
 flags.DEFINE_float("gamma", 0.99, " the speed of exploration")
 flags.DEFINE_float("lr",  0.001, "Learning rate")
 
+flags.DEFINE_integer("difficulty", 2, "Bot's strength.")
 flags.DEFINE_integer("train_freq", 100, "the freq that you train your model")
-flags.DEFINE_integer("batch_size", 1500, "the number of your examples that you want to train your model")
+flags.DEFINE_integer("batch_size", 3500, "the number of your examples that you want to train your model")
 flags.DEFINE_integer("print_freq", 15, "the freq that you print you result")
 flags.DEFINE_integer("learning_starts", 150000, "Learning start time")
 flags.DEFINE_integer("timesteps", 2500000, "most Steps to train")
 flags.DEFINE_integer("num_actions", 4, "numbers of your action")    #3
 flags.DEFINE_integer("step_mul", 5, "the time of every step spends")
 flags.DEFINE_integer("episode_steps", 2000, "the steps of every episode spends")# 2000
-flags.DEFINE_integer("buffer_size", 45000, "the number of actions that you want to store")
+flags.DEFINE_integer("buffer_size", 55000, "the number of actions that you want to store")
 flags.DEFINE_integer("target_network_update_freq", 100, "the freq that your network update")
 
 def main():
@@ -79,10 +80,11 @@ def main():
       map_name="DefeatZerglingsAndBanelings",
       step_mul=FLAGS.step_mul,
       visualize=FLAGS.visualize,
-      game_steps_per_episode= FLAGS.episode_steps) as env:
+      game_steps_per_episode= FLAGS.episode_steps,
+      difficulty=FLAGS.difficulty) as env:
 
     model = deepq.models.cnn_to_mlp(
-      convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],
+      convs=[(64, 8, 4), (64, 4, 2), (64, 3, 1), (64, 3, 1), (64, 3, 1), (32, 3, 1)],
       hiddens=[256],
       dueling=True
     )
