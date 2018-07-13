@@ -1,7 +1,7 @@
-# StarCraft2\n
-游戏AI探索者首发\n
-  地图： DefeatZerglingsAndBanelings\n
-  环境： baselines 见之前文章安装方法\n
+# StarCraft2
+游戏AI探索者首发
+  地图： DefeatZerglingsAndBanelings
+  环境： baselines 见之前文章安装方法
         Ubuntu          16.04
         Starcraft2      3.16.1
         Python          3.6
