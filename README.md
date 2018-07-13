@@ -1,6 +1,9 @@
-# StarCraft2
+StarCraft2
+===========
 游戏AI探索者首发
+
 ## 地图： DefeatZerglingsAndBanelings
+
 ## 环境： 
  <table>
   <tr>
@@ -12,8 +15,8 @@
     <th>Pysc2           1.2</th>
   </tr>
 <table>
-## 使用方法：
-       * 1、安装Starcraft2 linux版并且测试pysc2项目demo无误。
-       * 2、clone当前项目到home文件夹下。
-       * 3、训练方法： 
+## 使用方法：<br>
+       1、安装Starcraft2 linux版并且测试pysc2项目demo无误。<br>
+       2、clone当前项目到home文件夹下。<br>
+       3、训练方法： <br>
 
