@@ -11,4 +11,26 @@
         1、安装Starcraft2 linux版并且测试pysc2项目demo无误。
         2、clone当前项目到home文件夹下。
         3、训练方法： 
-          
+ <table>
+
+  <tr>
+
+    <th>地图</th>
+
+    <th>Hardware Required</th>
+
+    <th>Operating System</th>
+
+  </tr>
+
+  <tr>
+
+    <td>Tensorflow 0.10, Jupyter Notebook</td>
+
+    <td>Any x86 computer</td>
+
+    <td>Ubuntu Linux 16.04</td>
+
+  </tr>
+
+  <table>
